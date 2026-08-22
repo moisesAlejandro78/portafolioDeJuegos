@@ -1,80 +1,391 @@
-# 🥦 NutriMaze: Carrera Saludable
+<div align="center">
 
-Videojuego arcade educativo de laberinto inspirado en los clásicos, con temática de nutrición y mecánicas propias.
+<img src="assets/banner.png" width="100%">
 
-## Cómo jugar
+<br>
 
-1. Abre el archivo `index.html` en cualquier navegador moderno (Chrome, Firefox, Edge, Safari).
-2. También puedes servir la carpeta con un servidor local:
-   ```bash
-   cd nutrimaze
-   python3 -m http.server 8080
-   ```
-   Luego visita `http://localhost:8080`.
+# 🎮 MOISÉS ALEJANDRO
 
-## Controles
+<h3>Game Developer • Software Developer • Creative Technologist</h3>
 
-- **Teclado**: Flechas ↑ ↓ ← → o WASD
-- **Móvil / Touch**: Botones direccionales en pantalla
+<p>
+🇧🇴 Bolivia &nbsp;•&nbsp;
+🎮 Game Development &nbsp;•&nbsp;
+💻 Software Development &nbsp;•&nbsp;
+🚀 Interactive Experiences
+</p>
 
-## Objetivo
+<br>
 
-Recorre el laberinto, recoge **todos los alimentos saludables** 🥦🍎🥕 y llega a la **salida** 🚪 sin ser atrapado por los enemigos.
+<a href="#-mis-videojuegos">
+  <img src="https://img.shields.io/badge/🎮_MIS_VIDEOJUEGOS-FF2D75?style=for-the-badge">
+</a>
+&nbsp;
+<a href="#-tecnologías">
+  <img src="https://img.shields.io/badge/⚙️_TECNOLOGÍAS-7B61FF?style=for-the-badge">
+</a>
+&nbsp;
+<a href="#-sobre-el-proyecto">
+  <img src="https://img.shields.io/badge/🚀_PORTAFOLIO-00D9FF?style=for-the-badge">
+</a>
 
-## Mecánica de Equilibrio Nutritivo
+</div>
 
-| Tipo de comida | Efecto |
-|----------------|--------|
-| 🥦 Saludable (brócoli, manzanas, zanahorias, arvejas…) | + velocidad, personaje más ágil y delgado |
-| 🍔 Chatarra (hamburguesas, donas, pizza…) | − velocidad, personaje más grande y lento |
+<br>
 
-- **Ágil** (equilibrio alto): máxima velocidad y facilidad para escapar
-- **Equilibrado**: estado ideal
-- **Pesado**: lento y vulnerable
-- Si llegas a 0 de equilibrio → animación de “explosión de grasa” caricaturesca y derrota
+<h2>👾 Sobre mí</h2>
 
-## Enemigos
+<p>
+Hola, soy <strong>Moisés Alejandro</strong>, estudiante de Ingeniería de Sistemas Informáticos en la Universidad del Valle (Univalle), Bolivia.
+</p>
 
-| Enemigo | Comportamiento |
-|---------|----------------|
-| 🔴 Roko | Persigue directamente al jugador |
-| 🟣 Bombo | Se mueve de forma aleatoria |
-| 🟢 Chispa | Cambia de dirección con frecuencia |
-| 🟠 Traga | Patrulla zonas del mapa |
+<p>
+Me interesa el desarrollo de software, la creación de videojuegos y la construcción de experiencias interactivas. Me gusta experimentar con nuevas tecnologías, aprender mediante proyectos y transformar ideas en aplicaciones funcionales.
+</p>
 
-## Power-ups
+<p>
+🎮 Este repositorio reúne algunos de los videojuegos que he desarrollado como parte de mi aprendizaje y exploración en el mundo del desarrollo de videojuegos.
+</p>
 
-- ⚡ **Súper Energía**: aumento temporal de velocidad
-- 🛡️ **Escudo Nutritivo**: un impacto gratis
-- 🥕 **Súper Vegetal**: reduce el efecto de la comida chatarra
-- ✨ **Multiplicador**: puntos x2 por unos segundos
+<br>
 
-## Niveles
+<div align="center">
 
-1. Escuela Saludable  
-2. Parque de las Frutas  
-3. Supermercado  
-4. Centro de Bienestar  
-5. Granja Saludable  
+<h2>⚡ GAME DEV MODE: ON</h2>
 
-Cada nivel introduce más enemigos, más comida chatarra y laberintos más complejos. Al completar un nivel aparece una tarjeta educativa “¿Sabías que…?”.
+<p>
+<em>
+"Create. Play. Learn. Repeat."
+</em>
+</p>
 
-## Skins
+</div>
 
-Desbloquea nuevos personajes completando niveles:
+<br>
 
-- 🥕 Chef Nutri  
-- 🥦 Vegetalín  
-- 🍎 Manzanito  
-- ⚡ Turbo  
-- 🤖 Robo-Nutri  
-- 🧑‍🚀 Nutri Explorer  
+<h2>🛠️ Tecnologías</h2>
 
-## Características técnicas
+<h3>🎮 Desarrollo</h3>
 
-- HTML5 Canvas + JavaScript puro (sin dependencias)
-- Responsive y con controles táctiles
-- Animaciones, partículas y feedback visual
-- Interfaz moderna en español
+<p>
+<img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white">
+<img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white">
+<img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
+</p>
 
-¡Disfruta y aprende jugando!
+<h3>🔧 Herramientas</h3>
+
+<p>
+<img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white">
+<img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white">
+<img src="https://img.shields.io/badge/VS_Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white">
+</p>
+
+<br>
+
+<h2 id="-mis-videojuegos">🎮 Mis Videojuegos</h2>
+
+<p>
+Una colección de videojuegos desarrollados durante mi proceso de aprendizaje.
+Cada proyecto experimenta con diferentes mecánicas, diseños y tecnologías.
+</p>
+
+<br>
+
+<!-- ======================= JUEGO 1 ======================= -->
+
+<table>
+<tr>
+
+<td width="50%">
+
+<div align="center">
+
+<img src="assets/juegoAhorro.gif" width="100%">
+
+</div>
+
+</td>
+
+<td width="50%">
+
+<h2>💰 Juego Ahorro</h2>
+
+<p>
+Videojuego educativo enfocado en el aprendizaje y la toma de decisiones relacionadas con el ahorro y el manejo del dinero.
+</p>
+
+<p>
+<strong>🎯 Género:</strong> Educativo / Casual
+</p>
+
+<p>
+<strong>⚙️ Tecnología:</strong> HTML5 • CSS3 • JavaScript
+</p>
+
+<br>
+
+<a href="games/juegoAhorro">
+<img src="https://img.shields.io/badge/📂_VER_PROYECTO-7B61FF?style=for-the-badge">
+</a>
+
+ 
+
+<a href="games/juegoAhorro/index.html">
+<img src="https://img.shields.io/badge/▶️_JUGAR-00C853?style=for-the-badge">
+</a>
+
+</td>
+
+</tr>
+</table>
+
+<br>
+
+<!-- ======================= JUEGO 2 ======================= -->
+
+<table>
+<tr>
+
+<td width="50%">
+
+<h2>🐂 Bull E</h2>
+
+<p>
+Videojuego interactivo diseñado alrededor de una experiencia de juego dinámica y entretenida.
+</p>
+
+<p>
+<strong>🎯 Género:</strong> Arcade / Casual
+</p>
+
+<p>
+<strong>⚙️ Tecnología:</strong> HTML5 • CSS3 • JavaScript
+</p>
+
+<br>
+
+<a href="games/juegobullE">
+<img src="https://img.shields.io/badge/📂_VER_PROYECTO-7B61FF?style=for-the-badge">
+</a>
+
+ 
+
+<a href="games/juegobullE/index.html">
+<img src="https://img.shields.io/badge/▶️_JUGAR-00C853?style=for-the-badge">
+</a>
+
+</td>
+
+<td width="50%">
+
+<div align="center">
+
+<img src="assets/juegobullE.gif" width="100%">
+
+</div>
+
+</td>
+
+</tr>
+</table>
+
+<br>
+
+<!-- ======================= JUEGO 3 ======================= -->
+
+<table>
+<tr>
+
+<td width="50%">
+
+<div align="center">
+
+<img src="assets/juegoDinero.gif" width="100%">
+
+</div>
+
+</td>
+
+<td width="50%">
+
+<h2>💵 Juego Dinero</h2>
+
+<p>
+Videojuego educativo orientado al reconocimiento, manejo y utilización del dinero mediante diferentes desafíos interactivos.
+</p>
+
+<p>
+<strong>🎯 Género:</strong> Educativo / Puzzle
+</p>
+
+<p>
+<strong>⚙️ Tecnología:</strong> HTML5 • CSS3 • JavaScript
+</p>
+
+<br>
+
+<a href="games/juegoDinero">
+<img src="https://img.shields.io/badge/📂_VER_PROYECTO-7B61FF?style=for-the-badge">
+</a>
+
+ 
+
+<a href="games/juegoDinero/index.html">
+<img src="https://img.shields.io/badge/▶️_JUGAR-00C853?style=for-the-badge">
+</a>
+
+</td>
+
+</tr>
+</table>
+
+<br>
+
+<!-- ======================= JUEGO 4 ======================= -->
+
+<table>
+<tr>
+
+<td width="50%">
+
+<h2>🥦 Nutrimaze</h2>
+
+<p>
+Una aventura educativa donde el jugador debe superar desafíos relacionados con la alimentación y los hábitos saludables.
+</p>
+
+<p>
+<strong>🎯 Género:</strong> Aventura / Educativo / Maze
+</p>
+
+<p>
+<strong>⚙️ Tecnología:</strong> HTML5 • CSS3 • JavaScript
+</p>
+
+<br>
+
+<a href="games/juegoNutrimaze">
+<img src="https://img.shields.io/badge/📂_VER_PROYECTO-7B61FF?style=for-the-badge">
+</a>
+
+ 
+
+<a href="games/juegoNutrimaze/index.html">
+<img src="https://img.shields.io/badge/▶️_JUGAR-00C853?style=for-the-badge">
+</a>
+
+</td>
+
+<td width="50%">
+
+<div align="center">
+
+<img src="assets/juegoNutrimaze.gif" width="100%">
+
+</div>
+
+</td>
+
+</tr>
+</table>
+
+<br>
+
+<!-- ======================= JUEGO 5 ======================= -->
+
+<table>
+<tr>
+
+<td width="50%">
+
+<div align="center">
+
+<img src="assets/juegoReciclaje.gif" width="100%">
+
+</div>
+
+</td>
+
+<td width="50%">
+
+<h2>♻️ Juego Reciclaje</h2>
+
+<p>
+Videojuego educativo que busca enseñar conceptos relacionados con el reciclaje y el cuidado del medio ambiente mediante mecánicas interactivas.
+</p>
+
+<p>
+<strong>🎯 Género:</strong> Educativo / Casual
+</p>
+
+<p>
+<strong>⚙️ Tecnología:</strong> HTML5 • CSS3 • JavaScript
+</p>
+
+<br>
+
+<a href="games/juegoReciclaje">
+<img src="https://img.shields.io/badge/📂_VER_PROYECTO-7B61FF?style=for-the-badge">
+</a>
+
+ 
+
+<a href="games/juegoReciclaje/index.html">
+<img src="https://img.shields.io/badge/▶️_JUGAR-00C853?style=for-the-badge">
+</a>
+
+</td>
+
+</tr>
+</table>
+
+<br>
+
+<h2>📊 Portfolio Stats</h2>
+
+<div align="center">
+
+<img src="https://github-readme-stats.vercel.app/api?username=moisesAlejandro78&show_icons=true&theme=midnight-purple&hide_border=true" height="170">
+
+<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=moisesAlejandro78&layout=compact&theme=midnight-purple&hide_border=true" height="170">
+
+</div>
+
+<br>
+
+<h2 id="-sobre-el-proyecto">🚀 Sobre este portafolio</h2>
+
+<p>
+Este repositorio funciona como un portafolio de videojuegos donde documento y presento diferentes proyectos desarrollados durante mi formación como estudiante de Ingeniería de Sistemas.
+</p>
+
+<p>
+Cada videojuego cuenta con su propio directorio dentro de <code>games/</code>, mientras que los recursos visuales utilizados para presentar el portafolio se encuentran en <code>assets/</code>.
+</p>
+
+<br>
+
+<div align="center">
+
+<h2>🎮 MORE GAMES LOADING...</h2>
+
+<p>
+<strong>████████████████████░░░░ 80%</strong>
+</p>
+
+<p>
+🚧 More projects coming soon...
+</p>
+
+<br>
+
+<img src="https://img.shields.io/badge/GAME_DEV-FF2D75?style=for-the-badge">
+<img src="https://img.shields.io/badge/BUILD-7B61FF?style=for-the-badge">
+<img src="https://img.shields.io/badge/PLAY-00D9FF?style=for-the-badge">
+
+<br><br>
+
+<sub>Made with 💜 by Moisés Alejandro 🇧🇴</sub>
+
+</div>
