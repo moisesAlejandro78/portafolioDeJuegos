@@ -181,7 +181,7 @@ Videojuego interactivo diseñado alrededor de una experiencia de juego dinámica
 
 <div align="center">
 
-<img src="assets/juegobullE.gif" width="100%">
+<img src="assets/bully.png" width="100%">
 
 </div>
 
