@@ -1,80 +1,101 @@
-# 🥦 NutriMaze: Carrera Saludable
+# 💰 Money Runner
 
-Videojuego arcade educativo de laberinto inspirado en los clásicos, con temática de nutrición y mecánicas propias.
+Videojuego arcade educativo de carrera infinita (endless runner) centrado en la **administración del dinero**.  
+Corre por la ciudad, recolecta monedas, esquiva obstáculos y aprende a decidir qué hacer con tu dinero: **gastar, ahorrar o invertir en herramientas útiles**.
 
-## Cómo jugar
+## 📝 Descripción
 
-1. Abre el archivo `index.html` en cualquier navegador moderno (Chrome, Firefox, Edge, Safari).
-2. También puedes servir la carpeta con un servidor local:
-   ```bash
-   cd nutrimaze
-   python3 -m http.server 8080
-   ```
-   Luego visita `http://localhost:8080`.
+**Money Runner** es un juego educativo en el que el jugador controla a un personaje que corre por tres carriles en una ciudad.  
+El objetivo no es solo conseguir la mayor cantidad de dinero posible, sino **saber qué hacer con él**.
 
-## Controles
+Durante la carrera recolectas monedas (Bs), completas misiones financieras y al finalizar puedes comprar objetos en la tienda.  
+Cada compra tiene un efecto real en el gameplay y afecta tu **puntaje de responsabilidad financiera**.
 
-- **Teclado**: Flechas ↑ ↓ ← → o WASD
-- **Móvil / Touch**: Botones direccionales en pantalla
+## 🎯 Objetivo del jugador
 
-## Objetivo
+- Recorrer la mayor distancia posible.
+- Recolectar monedas.
+- Completar misiones financieras.
+- Ahorrar parte del dinero ganado.
+- Comprar solo lo necesario (necesidades vs deseos).
+- Mejorar tu **puntuación de responsabilidad financiera**.
 
-Recorre el laberinto, recoge **todos los alimentos saludables** 🥦🍎🥕 y llega a la **salida** 🚪 sin ser atrapado por los enemigos.
+## 🎮 Género
 
-## Mecánica de Equilibrio Nutritivo
+- Arcade
+- Endless Runner
+- Educational
 
-| Tipo de comida | Efecto |
-|----------------|--------|
-| 🥦 Saludable (brócoli, manzanas, zanahorias, arvejas…) | + velocidad, personaje más ágil y delgado |
-| 🍔 Chatarra (hamburguesas, donas, pizza…) | − velocidad, personaje más grande y lento |
+## 🕹️ Controles
 
-- **Ágil** (equilibrio alto): máxima velocidad y facilidad para escapar
-- **Equilibrado**: estado ideal
-- **Pesado**: lento y vulnerable
-- Si llegas a 0 de equilibrio → animación de “explosión de grasa” caricaturesca y derrota
+| Tecla / Acción          | Acción                  |
+|-------------------------|-------------------------|
+| ← o **A**               | Mover a la izquierda    |
+| → o **D**               | Mover a la derecha      |
+| ↑ o **W** o **Espacio** | Saltar                  |
+| ↓ o **S**               | Deslizarse              |
+| **P**                   | Pausar                  |
+| Botones en pantalla     | Controles táctiles      |
+| Swipe en el canvas      | Mover / saltar / deslizar |
 
-## Enemigos
+## 💡 Mecánica principal
 
-| Enemigo | Comportamiento |
-|---------|----------------|
-| 🔴 Roko | Persigue directamente al jugador |
-| 🟣 Bombo | Se mueve de forma aleatoria |
-| 🟢 Chispa | Cambia de dirección con frecuencia |
-| 🟠 Traga | Patrulla zonas del mapa |
+### Durante la carrera
+- Corre automáticamente por 3 carriles.
+- Recolecta monedas 🪙 (valor base 10 Bs, se puede duplicar).
+- Esquiva **autos** (salta) y **barreras** (deslízate).
+- Activa power-ups temporales:
+  - 🛡️ Escudo
+  - 🧲 Imán de monedas
+  - ⚡ Multiplicador ×2
 
-## Power-ups
+### Sistema de misiones
+Cada carrera tiene una misión aleatoria:
+- Recolectar X monedas
+- Recorrer X metros
+- Ahorrar cierta cantidad
 
-- ⚡ **Súper Energía**: aumento temporal de velocidad
-- 🛡️ **Escudo Nutritivo**: un impacto gratis
-- 🥕 **Súper Vegetal**: reduce el efecto de la comida chatarra
-- ✨ **Multiplicador**: puntos x2 por unos segundos
+Al completar una misión recibes una recompensa directa en tu **ahorro**.
 
-## Niveles
+### Tienda e Inventario
+Al terminar la carrera puedes gastar el dinero ganado:
 
-1. Escuela Saludable  
-2. Parque de las Frutas  
-3. Supermercado  
-4. Centro de Bienestar  
-5. Granja Saludable  
+| Categoría     | Ejemplos                          | Efecto real en el juego                          |
+|---------------|-----------------------------------|--------------------------------------------------|
+| 🟢 Útiles     | Mochila, Zapatillas, Cuaderno     | Mejoran magnetismo, salto, recompensas de misión |
+| 🟡 Deseos     | Audífonos, Consola, Hamburguesa   | Ventajas temporales pero penalizan el score      |
+| ⚡ Power-ups  | Escudo, Imán, Multiplicador       | Se activan automáticamente al inicio de la carrera |
 
-Cada nivel introduce más enemigos, más comida chatarra y laberintos más complejos. Al completar un nivel aparece una tarjeta educativa “¿Sabías que…?”.
+- Las **hamburguesas** 🍔 se convierten en escudos de emergencia (se consumen al chocar).
+- Las compras de tipo “necesidad” mejoran tu responsabilidad financiera.
+- Las compras de tipo “deseo” la empeoran.
 
-## Skins
+### Sistema de ahorro y puntuación
+Al final de cada carrera se genera un **Reporte Financiero**:
+- % gastado en Necesidades
+- % gastado en Deseos
+- % Ahorrado
+- **Responsabilidad Financiera** (0-100%)
 
-Desbloquea nuevos personajes completando niveles:
+## 🏆 Condiciones de victoria / derrota
 
-- 🥕 Chef Nutri  
-- 🥦 Vegetalín  
-- 🍎 Manzanito  
-- ⚡ Turbo  
-- 🤖 Robo-Nutri  
-- 🧑‍🚀 Nutri Explorer  
+- **Victoria**: llegar a 3000 metros.
+- **Derrota**: chocar sin escudo ni hamburguesas de emergencia.
 
-## Características técnicas
+## 📊 Características técnicas
 
-- HTML5 Canvas + JavaScript puro (sin dependencias)
-- Responsive y con controles táctiles
-- Animaciones, partículas y feedback visual
-- Interfaz moderna en español
+- HTML5 Canvas + JavaScript puro (sin dependencias externas)
+- Guardado local (`localStorage`)
+- Responsive + controles táctiles + swipe
+- Sistema de audio procedural (Web Audio API)
+- Partículas, flash de pantalla, shake y animaciones de squash & stretch
+- Ciclo día → atardecer → noche según la distancia
 
-¡Disfruta y aprende jugando!
+## ▶️ Cómo jugar
+
+1. Abre el archivo `index.html` en cualquier navegador moderno.
+2. O sirve la carpeta con un servidor local:
+
+```bash
+cd juegoDinero
+python3 -m http.server 8080
