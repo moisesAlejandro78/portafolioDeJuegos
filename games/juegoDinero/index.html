@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Money Runner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div id="gameApp">
+
+    <!-- =========================
+         PANTALLA DE INICIO
+    ========================== -->
+    <section id="startScreen" class="screen active">
+
+        <div class="start-background">
+            <div class="city-glow"></div>
+
+            <div class="logo-area">
+                <div class="logo-money">💰</div>
+                <h1>MONEY <span>RUNNER</span></h1>
+                <p>Corre. Decide. Ahorra.</p>
+            </div>
+
+            <div class="start-card">
+
+                <div class="start-description">
+                    <h2>🏙️ Tu dinero. Tus decisiones.</h2>
+
+                    <p>
+                        Corre por la ciudad, recoge monedas,
+                        esquiva obstáculos y administra tu dinero.
+                    </p>
+
+                    <div class="mini-features">
+                        <div>
+                            <span>🪙</span>
+                            <b>Recolecta</b>
+                        </div>
+
+                        <div>
+                            <span>🛒</span>
+                            <b>Compra</b>
+                        </div>
+
+                        <div>
+                            <span>🏦</span>
+                            <b>Ahorra</b>
+                        </div>
+
+                        <div>
+                            <span>🎒</span>
+                            <b>Equipa</b>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="startButton" class="primary-button">
+                    <span>▶</span>
+                    COMENZAR
+                </button>
+
+                <button id="howButton" class="secondary-button">
+                    ❔ ¿CÓMO JUGAR?
+                </button>
+
+            </div>
+
+            <div class="start-footer">
+                <span>Money Runner</span>
+                <span>•</span>
+                <span>Aprende jugando</span>
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         PANTALLA DEL JUEGO
+    ========================== -->
+    <section id="gameScreen" class="screen">
+
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="screenFlash"></div>
+
+        <!-- HUD -->
+        <div id="hud">
+
+            <div class="hud-top">
+
+                <div class="hud-box money-box">
+                    <span class="hud-icon">💰</span>
+                    <div>
+                        <small>DINERO</small>
+                        <strong id="moneyDisplay">Bs 0</strong>
+                    </div>
+                </div>
+
+                <div class="hud-box score-box">
+                    <span class="hud-icon">🏃</span>
+                    <div>
+                        <small>DISTANCIA</small>
+                        <strong id="distanceDisplay">0 m</strong>
+                    </div>
+                </div>
+
+                <div class="hud-box save-box">
+                    <span class="hud-icon">🏦</span>
+                    <div>
+                        <small>AHORRO</small>
+                        <strong id="savingDisplay">Bs 0</strong>
+                    </div>
+                </div>
+
+                <div class="hud-box level-box">
+                    <span class="hud-icon" id="phaseIcon">🌞</span>
+                    <div>
+                        <small>NIVEL</small>
+                        <strong id="levelDisplay">1</strong>
+                    </div>
+                </div>
+
+                <button id="pauseButton" class="hud-button">Ⅱ</button>
+
+            </div>
+
+            <div class="hud-middle">
+
+                <div class="mission-panel">
+
+                    <div class="mission-title">
+                        <span>🎯</span>
+                        <span id="missionTitle">META FINANCIERA</span>
+                    </div>
+
+                    <div class="mission-progress">
+                        <div id="missionProgressBar"></div>
+                    </div>
+
+                    <div class="mission-text">
+                        <span id="missionText">
+                            Recolecta monedas
+                        </span>
+
+                        <strong id="missionCount">
+                            0/20
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="hud-bottom">
+
+                <div class="power-status">
+                    <div id="shieldIndicator" class="power-indicator hidden">
+                        🛡️
+                    </div>
+
+                    <div id="magnetIndicator" class="power-indicator hidden">
+                        🧲
+                    </div>
+
+                    <div id="doubleIndicator" class="power-indicator hidden">
+                        ×2
+                    </div>
+
+                    <div id="bankedShieldIndicator" class="power-indicator hidden">
+                        🍔<span id="bankedShieldCount">0</span>
+                    </div>
+                </div>
+
+                <div class="speed-display">
+                    <span>VELOCIDAD</span>
+                    <div class="speed-bar">
+                        <div id="speedBar"></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CONTROLES -->
+        <div id="touchControls">
+
+            <button id="leftControl" class="touch-button">
+                ◀
+            </button>
+
+            <button id="jumpControl" class="touch-button jump-control">
+                ▲
+            </button>
+
+            <button id="slideControl" class="touch-button slide-control">
+                ▼
+            </button>
+
+            <button id="rightControl" class="touch-button">
+                ▶
+            </button>
+
+        </div>
+
+
+        <!-- EVENTO EDUCATIVO -->
+        <div id="decisionPopup" class="overlay hidden">
+
+            <div class="decision-card">
+
+                <div class="decision-icon" id="decisionIcon">
+                    💡
+                </div>
+
+                <h2 id="decisionTitle">
+                    DECISIÓN
+                </h2>
+
+                <p id="decisionDescription">
+                    ¿Qué quieres hacer?
+                </p>
+
+                <div id="decisionOptions"></div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         PAUSA
+    ========================== -->
+    <div id="pauseOverlay" class="overlay hidden">
+
+        <div class="pause-card">
+
+            <div class="pause-icon">⏸️</div>
+
+            <h2>JUEGO EN PAUSA</h2>
+
+            <p>Tu dinero está esperando.</p>
+
+            <button id="resumeButton" class="primary-button">
+                ▶ CONTINUAR
+            </button>
+
+            <button id="pauseHomeButton" class="secondary-button">
+                🏠 MENÚ PRINCIPAL
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         TIENDA
+    ========================== -->
+    <section id="shopScreen" class="screen">
+
+        <div class="interface-background">
+
+            <header class="interface-header">
+
+                <div>
+                    <span class="small-label">MONEY RUNNER</span>
+                    <h1>🛒 TIENDA</h1>
+                </div>
+
+                <div class="header-wallet">
+                    <span>💰</span>
+                    <strong id="shopMoney">Bs 0</strong>
+                </div>
+
+            </header>
+
+            <div class="shop-tabs">
+
+                <button class="shop-tab active" data-category="all">
+                    TODOS
+                </button>
+
+                <button class="shop-tab" data-category="utility">
+                    🟢 ÚTILES
+                </button>
+
+                <button class="shop-tab" data-category="fun">
+                    🟡 DESEOS
+                </button>
+
+                <button class="shop-tab" data-category="power">
+                    ⚡ POWER-UPS
+                </button>
+
+            </div>
+
+            <div id="shopGrid" class="shop-grid"></div>
+
+            <div class="interface-footer">
+
+                <button id="shopInventoryButton" class="secondary-button">
+                    🎒 INVENTARIO
+                </button>
+
+                <button id="shopBackButton" class="primary-button">
+                    🏃 VOLVER A CORRER
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         INVENTARIO
+    ========================== -->
+    <section id="inventoryScreen" class="screen">
+
+        <div class="interface-background">
+
+            <header class="interface-header">
+
+                <div>
+                    <span class="small-label">MONEY RUNNER</span>
+                    <h1>🎒 INVENTARIO</h1>
+                </div>
+
+                <div class="header-wallet">
+                    <span>💰</span>
+                    <strong id="inventoryMoney">Bs 0</strong>
+                </div>
+
+            </header>
+
+            <div class="financial-summary">
+
+                <div class="summary-card">
+                    <span>💰</span>
+                    <small>DINERO</small>
+                    <strong id="inventoryCash">Bs 0</strong>
+                </div>
+
+                <div class="summary-card">
+                    <span>🏦</span>
+                    <small>AHORRO</small>
+                    <strong id="inventorySaving">Bs 0</strong>
+                </div>
+
+                <div class="summary-card">
+                    <span>📊</span>
+                    <small>RESPONSABILIDAD</small>
+                    <strong id="invFinancialScore">0%</strong>
+                </div>
+
+            </div>
+
+            <div id="inventoryGrid" class="inventory-grid"></div>
+
+            <div class="interface-footer">
+
+                <button id="inventoryShopButton" class="secondary-button">
+                    🛒 TIENDA
+                </button>
+
+                <button id="inventoryBackButton" class="primary-button">
+                    🏃 VOLVER
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         RESULTADOS
+    ========================== -->
+    <section id="resultScreen" class="screen">
+
+        <div class="result-background">
+
+            <div id="resultIcon" class="result-icon">
+                🏆
+            </div>
+
+            <h1 id="resultTitle">
+                ¡EXCELENTE!
+            </h1>
+
+            <p id="resultMessage">
+                Has terminado tu carrera.
+            </p>
+
+            <div class="result-stats">
+
+                <div class="result-stat">
+                    <span>🏃</span>
+                    <small>DISTANCIA</small>
+                    <strong id="finalDistance">0 m</strong>
+                </div>
+
+                <div class="result-stat">
+                    <span>🪙</span>
+                    <small>MONEDAS</small>
+                    <strong id="finalCoins">0</strong>
+                </div>
+
+                <div class="result-stat">
+                    <span>💰</span>
+                    <small>DINERO</small>
+                    <strong id="finalMoney">Bs 0</strong>
+                </div>
+
+                <div class="result-stat">
+                    <span>🏦</span>
+                    <small>AHORRO</small>
+                    <strong id="finalSaving">Bs 0</strong>
+                </div>
+
+            </div>
+
+            <div class="financial-report">
+
+                <h3>📊 TU REPORTE FINANCIERO</h3>
+
+                <div class="report-row">
+                    <span>Necesidades</span>
+                    <div class="report-bar">
+                        <div id="needsBar"></div>
+                    </div>
+                    <strong id="needsPercent">0%</strong>
+                </div>
+
+                <div class="report-row">
+                    <span>Ahorro</span>
+                    <div class="report-bar">
+                        <div id="savingBar"></div>
+                    </div>
+                    <strong id="savingPercent">0%</strong>
+                </div>
+
+                <div class="report-row">
+                    <span>Deseos</span>
+                    <div class="report-bar">
+                        <div id="wantsBar"></div>
+                    </div>
+                    <strong id="wantsPercent">0%</strong>
+                </div>
+
+            </div>
+
+            <div class="score-badge">
+                <span>RESPONSABILIDAD FINANCIERA</span>
+                <strong id="resultFinancialScore">50%</strong>
+            </div>
+
+            <div class="result-actions">
+
+                <button id="restartButton" class="primary-button">
+                    🔄 JUGAR DE NUEVO
+                </button>
+
+                <button id="resultShopButton" class="secondary-button">
+                    🛒 TIENDA
+                </button>
+
+                <button id="resultHomeButton" class="ghost-button">
+                    🏠 MENÚ
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         CÓMO JUGAR
+    ========================== -->
+    <div id="howOverlay" class="overlay hidden">
+
+        <div class="how-card">
+
+            <button id="closeHow" class="close-button">×</button>
+
+            <h2>🎮 ¿CÓMO JUGAR?</h2>
+
+            <div class="controls-info">
+
+                <div>
+                    <kbd>←</kbd>
+                    <span>Mover izquierda</span>
+                </div>
+
+                <div>
+                    <kbd>→</kbd>
+                    <span>Mover derecha</span>
+                </div>
+
+                <div>
+                    <kbd>↑</kbd>
+                    <span>Saltar</span>
+                </div>
+
+                <div>
+                    <kbd>↓</kbd>
+                    <span>Deslizarse</span>
+                </div>
+
+                <div>
+                    <kbd>P</kbd>
+                    <span>Pausar</span>
+                </div>
+
+            </div>
+
+            <div class="rules-info">
+
+                <h3>💡 CONSEJO</h3>
+
+                <p>
+                    No se trata de conseguir la mayor cantidad de dinero
+                    posible. Se trata de saber qué hacer con él.
+                </p>
+
+                <ul>
+                    <li>🪙 Recolecta monedas.</li>
+                    <li>🛡️ Salta para esquivar autos, desliza para pasar bajo las barreras.</li>
+                    <li>🏦 Ahorra una parte.</li>
+                    <li>🛒 Compra solo lo necesario: cada objeto del inventario te da una ventaja real en la pista.</li>
+                    <li>⚡ Los power-ups comprados se activan al inicio de cada carrera.</li>
+                    <li>🍔 Las hamburguesas dan escudos de emergencia (se consumen al chocar).</li>
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TOAST -->
+    <div id="toastContainer"></div>
+
+</div>
+
+<script src="game.js"></script>
+
+</body>
+</html>

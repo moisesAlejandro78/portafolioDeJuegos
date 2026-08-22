@@ -1,0 +1,2930 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huella Digital - La Sombra en la Red</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&family=VT323&display=swap');
+
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-darker: #050505;
+            --bg-panel: #111111;
+            --text-primary: #c0c0c0;
+            --text-secondary: #808080;
+            --accent-red: #8b0000;
+            --accent-dark-red: #4a0000;
+            --accent-blue: #1a1a3e;
+            --accent-green: #1a3e1a;
+            --border-dark: #2a2a2a;
+            --glow-red: 0 0 20px rgba(139, 0, 0, 0.5);
+            --font-creepy: 'Creepster', cursive;
+            --font-typewriter: 'Special Elite', cursive;
+            --font-terminal: 'VT323', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-typewriter);
+            background: var(--bg-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            user-select: none;
+            overflow-x: hidden;
+            transition: background 0.5s ease;
+        }
+
+        .game-container {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-dark);
+            border-radius: 15px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            max-width: 900px;
+            width: 100%;
+            min-height: 85vh;
+            max-height: 90vh;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, var(--bg-darker), var(--bg-panel));
+            color: var(--text-primary);
+            padding: 15px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-dark);
+            flex-shrink: 0;
+        }
+
+        .game-title {
+            font-family: var(--font-creepy);
+            font-size: 1.8rem;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.7);
+            animation: flicker 3s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            3% { opacity: 0.8; }
+            6% { opacity: 1; }
+            50% { opacity: 1; }
+            53% { opacity: 0.7; }
+            54% { opacity: 1; }
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            background: var(--bg-darker);
+            color: var(--text-primary);
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border-dark);
+            font-family: var(--font-terminal);
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 3px;
+            cursor: help;
+        }
+
+        .status-icon {
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            width: 50px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid var(--border-dark);
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 3px;
+        }
+
+        .karma-good { background: var(--accent-green); }
+        .karma-bad { background: var(--accent-red); }
+
+        .game-content {
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-panel);
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .day-indicator {
+            text-align: center;
+            color: var(--text-secondary);
+            font-family: var(--font-terminal);
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            padding: 8px;
+            background: var(--bg-darker);
+            border-radius: 5px;
+            border: 1px solid var(--border-dark);
+        }
+
+        .chat-container {
+            background: var(--bg-darker);
+            border: 1px solid var(--border-dark);
+            border-radius: 10px;
+            padding: 15px;
+            flex: 1;
+            min-height: 250px;
+            max-height: 400px;
+            margin-bottom: 10px;
+            overflow-y: auto;
+            font-family: var(--font-terminal);
+            font-size: 1rem;
+        }
+
+        .chat-message {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .chat-message.sent { justify-content: flex-end; }
+        .chat-message.received { justify-content: flex-start; }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            word-wrap: break-word;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .sent .message-bubble {
+            background: var(--accent-blue);
+            color: #c0c0c0;
+            border-bottom-right-radius: 4px;
+        }
+
+        .received .message-bubble {
+            background: #1a1a1a;
+            color: #c0c0c0;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin: 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            background: var(--bg-darker);
+            border: 1px solid var(--border-dark);
+            flex-shrink: 0;
+        }
+
+        .message-name {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 2px;
+            display: block;
+        }
+
+        .typing-indicator {
+            display: inline-block;
+            padding: 8px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .typing-dot {
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #666;
+            margin: 0 1px;
+            animation: typingAnimation 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+
+        .choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .choice-btn {
+            padding: 10px 14px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-dark);
+            border-radius: 6px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: var(--font-terminal);
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .choice-btn:hover {
+            border-color: var(--accent-red);
+            box-shadow: var(--glow-red);
+            transform: translateX(3px);
+            background: var(--bg-darker);
+        }
+
+        .actions-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            margin: 10px 0;
+            padding: 10px;
+            background: var(--bg-darker);
+            border-radius: 8px;
+            border: 1px solid var(--border-dark);
+        }
+
+        .action-btn {
+            padding: 10px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-dark);
+            border-radius: 6px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: var(--font-terminal);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            border-color: var(--accent-red);
+            box-shadow: var(--glow-red);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-dark);
+            border-radius: 6px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: var(--font-terminal);
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            border-color: var(--accent-red);
+            box-shadow: var(--glow-red);
+            transform: translateY(-2px);
+        }
+
+        .notification-container {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: 250px;
+            pointer-events: none;
+        }
+
+        .notification {
+            padding: 10px 12px;
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: var(--font-terminal);
+            font-size: 0.8rem;
+            animation: slideIn 0.4s ease-out;
+            pointer-events: auto;
+            border: 1px solid var(--border-dark);
+            background: var(--bg-panel);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .notification::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+        }
+
+        .notification-success::before { background: var(--accent-green); }
+        .notification-warning::before { background: #8b8000; }
+        .notification-danger::before { background: var(--accent-red); }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(80px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .fullscreen-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            z-index: 100;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-dark);
+            color: var(--text-primary);
+            padding: 5px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                margin: 5px;
+                min-height: 90vh;
+                max-height: 95vh;
+            }
+            
+            .status-bar {
+                font-size: 0.7rem;
+            }
+            
+            .progress-bar {
+                width: 30px;
+            }
+            
+            .actions-panel {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .message-bubble {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container" id="gameContainer">
+        <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
+        <div id="gameContent"></div>
+    </div>
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <script>
+        class GameState {
+            constructor() {
+                this.karma = 0;
+                this.fear = 0;
+                this.guilt = 0;
+                this.awareness = 0;
+                this.paranoia = 0;
+                this.policeSuspicion = 0;
+                this.saraTrust = 50;
+                this.saraFear = 0;
+                this.playerName = "";
+                this.day = 0;
+                this.chapter = 0;
+                this.isGameOver = false;
+                this.chatHistory = [];
+                this.consequences = [];
+                this.hasFlashDrive = false;
+                this.incognitoMode = false;
+                this.vpnActive = false;
+                this.hardDriveDestroyed = false;
+                this.sentRequest = false;
+                this.policeInvolved = false;
+                this.saraBlocked = false;
+                this.saraReported = false;
+                this.evidenceFound = false;
+                this.rumorsSpread = 0;
+                this.fakeAccounts = 0;
+                this.screenshotsTaken = 0;
+                this.messagesSent = 0;
+                this.nightEvents = [];
+                this.schoolEvents = [];
+                this.mentalState = "estable";
+                this.saraKnowsIdentity = false;
+                this.policeInterviewed = false;
+                this.schoolInvolved = false;
+                this.parentsKnow = false;
+            }
+
+            reset() {
+                this.karma = 0;
+                this.fear = 0;
+                this.guilt = 0;
+                this.awareness = 0;
+                this.paranoia = 0;
+                this.policeSuspicion = 0;
+                this.saraTrust = 50;
+                this.saraFear = 0;
+                this.playerName = "";
+                this.day = 0;
+                this.chapter = 0;
+                this.isGameOver = false;
+                this.chatHistory = [];
+                this.consequences = [];
+                this.hasFlashDrive = false;
+                this.incognitoMode = false;
+                this.vpnActive = false;
+                this.hardDriveDestroyed = false;
+                this.sentRequest = false;
+                this.policeInvolved = false;
+                this.saraBlocked = false;
+                this.saraReported = false;
+                this.evidenceFound = false;
+                this.rumorsSpread = 0;
+                this.fakeAccounts = 0;
+                this.screenshotsTaken = 0;
+                this.messagesSent = 0;
+                this.nightEvents = [];
+                this.schoolEvents = [];
+                this.mentalState = "estable";
+                this.saraKnowsIdentity = false;
+                this.policeInterviewed = false;
+                this.schoolInvolved = false;
+                this.parentsKnow = false;
+            }
+
+            addKarma(amount) {
+                this.karma += amount;
+                this.updateUI();
+            }
+
+            addFear(amount) {
+                this.fear += amount;
+                this.paranoia += amount * 0.5;
+                this.updateUI();
+                this.checkMentalState();
+            }
+
+            addGuilt(amount) {
+                this.guilt += amount;
+                this.updateUI();
+                this.checkMentalState();
+            }
+
+            addAwareness(amount) {
+                this.awareness += amount;
+                this.updateUI();
+            }
+
+            addPoliceSuspicion(amount) {
+                this.policeSuspicion += amount;
+                this.updateUI();
+                if (this.policeSuspicion >= 30 && !this.policeInvolved) {
+                    this.policeInvolved = true;
+                    this.addConsequence("La policía ha comenzado a investigar");
+                }
+                if (this.policeSuspicion >= 60 && !this.policeInterviewed) {
+                    this.policeInterviewed = true;
+                    this.addConsequence("La policía te ha citado para una entrevista");
+                }
+                if (this.policeSuspicion >= 80 && !this.evidenceFound) {
+                    this.evidenceFound = true;
+                    this.addConsequence("La policía ha encontrado evidencia en tu contra");
+                }
+            }
+
+            addSaraFear(amount) {
+                this.saraFear += amount;
+                this.updateUI();
+                if (this.saraFear >= 50 && !this.saraReported) {
+                    this.saraReported = true;
+                    this.addConsequence("Sara ha denunciado el acoso a la policía");
+                    this.addPoliceSuspicion(30);
+                }
+                if (this.saraFear >= 80 && !this.saraBlocked) {
+                    this.saraBlocked = true;
+                    this.addConsequence("Sara te ha bloqueado en todas las redes sociales");
+                }
+            }
+
+            addConsequence(text) {
+                this.consequences.push(text);
+                this.showNotification(text, 'warning');
+            }
+
+            checkMentalState() {
+                if (this.paranoia >= 80) {
+                    this.mentalState = "paranoico";
+                } else if (this.guilt >= 60) {
+                    this.mentalState = "culpable";
+                } else if (this.fear >= 70) {
+                    this.mentalState = "aterrorizado";
+                } else if (this.awareness >= 50) {
+                    this.mentalState = "consciente";
+                } else {
+                    this.mentalState = "estable";
+                }
+            }
+
+            showNotification(text, type) {
+                const container = document.getElementById('notificationContainer');
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type}`;
+                notification.textContent = text;
+                container.appendChild(notification);
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateX(80px)';
+                    setTimeout(() => notification.remove(), 300);
+                }, 2500);
+            }
+
+            updateUI() {
+                const ids = ['karmaBar', 'fearBar', 'guiltBar', 'awarenessBar', 'paranoiaBar', 'policeBar', 'saraFearBar'];
+                const values = [this.karma, this.fear, this.guilt, this.awareness, this.paranoia, this.policeSuspicion, this.saraFear];
+                
+                ids.forEach((id, index) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        if (index === 0) {
+                            element.style.width = `${Math.min(100, Math.max(-100, values[index]) + 100) / 2}%`;
+                            element.className = `progress-fill ${values[index] >= 0 ? 'karma-good' : 'karma-bad'}`;
+                        } else {
+                            element.style.width = `${Math.min(100, values[index])}%`;
+                            element.className = 'progress-fill karma-bad';
+                        }
+                    }
+                });
+            }
+        }
+
+        class DarkGame {
+            constructor() {
+                this.state = new GameState();
+                this.conversationStep = 0;
+                this.currentEventIndex = 0;
+            }
+
+            startGame() {
+                this.state.reset();
+                this.showIntro();
+            }
+
+            showIntro() {
+                const introHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">HUELLA DIGITAL</h1>
+                    </div>
+                    <div class="game-content" style="justify-content: center; align-items: center; text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 20px;">🌑</div>
+                        <h2 style="color: var(--text-primary); margin-bottom: 20px; font-family: var(--font-creepy);">
+                            La Sombra en la Red
+                        </h2>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 30px; max-width: 600px;">
+                            Una historia interactiva sobre el acoso digital.<br>
+                            Tus decisiones darán forma a una narrativa de 7 días.<br>
+                            Cada acción tiene consecuencias que se extienden en el tiempo.<br>
+                            ¿Podrás detenerte antes de que sea demasiado tarde?
+                        </p>
+                        <button class="btn" onclick="game.showWarning()" style="padding: 15px 30px; font-size: 1.1rem;">
+                            COMENZAR
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = introHTML;
+            }
+
+            showWarning() {
+                const warningHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">ADVERTENCIA</h1>
+                    </div>
+                    <div class="game-content" style="justify-content: center; align-items: center; text-align: center;">
+                        <h2 style="color: var(--accent-red); margin-bottom: 20px;">
+                            ⚠️ CONTENIDO SENSIBLE
+                        </h2>
+                        <p style="line-height: 1.6; margin-bottom: 30px; color: var(--text-secondary);">
+                            Este juego explora temas oscuros de acoso digital.<br>
+                            Contiene contenido perturbador que puede afectar a personas sensibles.<br>
+                            El objetivo es educativo y de concientización sobre las consecuencias reales.
+                        </p>
+                        <button class="btn" onclick="game.showNameInput()" style="padding: 15px 30px;">
+                            ENTIENDO Y CONTINÚO
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = warningHTML;
+            }
+
+            showNameInput() {
+                const nameHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">¿QUIÉN ERES?</h1>
+                    </div>
+                    <div class="game-content" style="justify-content: center;">
+                        <div style="background: var(--bg-darker); border: 1px solid var(--border-dark); border-radius: 10px; padding: 25px; text-align: center; max-width: 400px; margin: 0 auto;">
+                            <h3 style="color: var(--text-primary); margin-bottom: 15px;">Ingresa tu nombre</h3>
+                            <input type="text" id="nameInput" placeholder="Tu nombre..." maxlength="20" autocomplete="off"
+                                   style="width: 100%; padding: 12px; font-size: 1.1rem; border: 1px solid var(--border-dark); border-radius: 6px; background: var(--bg-panel); color: var(--text-primary); text-align: center; outline: none; font-family: var(--font-terminal); margin-bottom: 15px;">
+                            <button class="btn" onclick="game.confirmName()" style="width: 100%; padding: 12px;">ACEPTAR</button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = nameHTML;
+                
+                const input = document.getElementById('nameInput');
+                input.focus();
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.confirmName();
+                });
+            }
+
+            confirmName() {
+                const name = document.getElementById('nameInput').value.trim();
+                if (name) {
+                    this.state.playerName = name;
+                    this.startDay1();
+                } else {
+                    this.state.showNotification('Por favor ingresa un nombre', 'danger');
+                }
+            }
+
+            startDay1() {
+                this.state.day = 1;
+                this.state.chapter = 1;
+                this.showDay1Morning();
+            }
+
+            showDay1Morning() {
+                const morningHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">DÍA 1 - MAÑANA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 1 - 7:30 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Te despiertas y revisas tu teléfono como cada mañana. Mientras navegas por las redes sociales, 
+                            ves que Sara ha publicado una foto nueva. Es una compañera de clase con la que apenas has hablado.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Algo en su perfil te llama la atención. Tiene muchos amigos, parece feliz, y hay algo en ella 
+                            que despierta un sentimiento extraño en ti. No sabes si es envidia, curiosidad, o algo más oscuro.
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day1LookProfile()">
+                                👁️ Ver su perfil completo
+                            </button>
+                            <button class="choice-btn" onclick="game.day1IgnoreProfile()">
+                                🙈 Ignorar y seguir con tu día
+                            </button>
+                            <button class="choice-btn" onclick="game.day1SendRequest()">
+                                ✉️ Enviar solicitud de amistad
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = morningHTML;
+            }
+
+            day1LookProfile() {
+                this.state.addKarma(-5);
+                this.state.addConsequence("Revisaste el perfil de Sara en detalle");
+                this.state.showNotification("Encuentras información personal en su perfil", 'warning');
+                
+                const profileHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">PERFIL DE SARA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 1 - 8:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Navegas por el perfil de Sara. Ves sus fotos, sus amigos, los lugares que frecuenta.
+                            Hay mucha información pública: su escuela, su barrio, sus gustos musicales, sus rutinas.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Encuentras su dirección en una publicación antigua. También ves que suele ir al parque 
+                            los sábados por la mañana. Esta información es pública, pero saberla te da una sensación 
+                            de poder que no habías sentido antes.
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day1SaveInfo()">
+                                💾 Guardar esta información
+                            </button>
+                            <button class="choice-btn" onclick="game.day1JustBrowse()">
+                                👀 Solo mirar sin guardar nada
+                            </button>
+                            <button class="choice-btn" onclick="game.day1SendRequest()">
+                                ✉️ Enviar solicitud de amistad
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = profileHTML;
+            }
+
+            day1IgnoreProfile() {
+                this.state.addKarma(10);
+                this.state.addAwareness(5);
+                this.state.addConsequence("Decidiste ignorar el perfil de Sara");
+                
+                const ignoreHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">DÍA 1 - SIGUE TU DÍA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 1 - 8:30 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Decides ignorar el perfil de Sara y continuar con tu rutina. Vas a la escuela, asistes a clases,
+                            y tratas de concentrarte en tus estudios. Pero en el fondo, algo sigue inquietándote.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Durante el almuerzo, ves a Sara con sus amigos. Se ve feliz, riendo. Por un momento, 
+                            sus miradas se cruzan, pero ella no parece notarte.
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day1AfterSchool()">
+                                📚 Continuar con tu día normal
+                            </button>
+                            <button class="choice-btn" onclick="game.day1SendRequest()">
+                                ✉️ Enviar solicitud de amistad
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = ignoreHTML;
+            }
+
+            day1SendRequest() {
+                this.state.sentRequest = true;
+                this.state.addConsequence("Enviaste solicitud de amistad a Sara");
+                
+                const requestHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">SOLICITUD ENVIADA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 1 - 9:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Has enviado una solicitud de amistad a Sara. Ahora solo queda esperar a que la acepte.
+                            Sientes una mezcla de nervios y expectativa.
+                        </p>
+                        <div class="typing-indicator" id="waitingIndicator">
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                        </div>
+                        <p style="color: var(--text-secondary); margin-top: 20px;">
+                            Esperando respuesta...
+                        </p>
+                        <button class="btn" onclick="game.day1AfterSchool()" style="margin-top: 20px;">
+                            Ir a la escuela
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = requestHTML;
+                
+                setTimeout(() => {
+                    const indicator = document.getElementById('waitingIndicator');
+                    if (indicator) {
+                        indicator.innerHTML = '<p style="color: var(--accent-green);">✅ Sara aceptó tu solicitud</p>';
+                        this.state.saraTrust += 5;
+                        this.state.addConsequence("Sara aceptó tu solicitud de amistad");
+                    }
+                }, 3000);
+            }
+
+            day1SaveInfo() {
+                this.state.hasFlashDrive = true;
+                this.state.addKarma(-15);
+                this.state.addConsequence("Guardaste información personal de Sara en un USB");
+                this.state.showNotification("💾 Información guardada", 'danger');
+                
+                const saveHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">INFORMACIÓN GUARDADA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 1 - 8:15 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Has guardado la información personal de Sara en un USB. No sabes exactamente por qué lo hiciste,
+                            pero hay algo en tener ese control que te resulta extrañamente satisfactorio.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Guardas el USB en un cajón. Es solo información pública, te dices a ti mismo.
+                            No estás haciendo nada malo... todavía.
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day1SendRequest()">
+                                ✉️ Enviar solicitud de amistad
+                            </button>
+                            <button class="choice-btn" onclick="game.day1AfterSchool()">
+                                📚 Ir a la escuela
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = saveHTML;
+            }
+
+            day1JustBrowse() {
+                this.state.addKarma(-5);
+                this.state.addConsequence("Miraste el perfil de Sara sin guardar nada");
+                
+                const browseHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">NAVEGANDO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 1 - 8:15 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Navegas por el perfil de Sara sin guardar nada específico. Es solo curiosidad, te dices.
+                            Después de un rato, cierras la aplicación y te preparas para ir a la escuela.
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day1SendRequest()">
+                                ✉️ Enviar solicitud de amistad
+                            </button>
+                            <button class="choice-btn" onclick="game.day1AfterSchool()">
+                                📚 Ir a la escuela
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = browseHTML;
+            }
+
+            day1AfterSchool() {
+                const afterSchoolHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">DÍA 1 - DESPUÉS DE CLASES</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 1 - 3:00 PM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Las clases terminan. Hoy has visto a Sara varias veces en los pasillos. 
+                            Parece que no te ha notado, o tal vez está fingiendo no hacerlo.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Llegas a casa y te sientas frente a la computadora. El cursor parpadea en la barra de búsqueda.
+                            Hay algo que te impulsa a escribir su nombre de nuevo.
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day1EveningSearch()">
+                                🔍 Buscar más información sobre Sara
+                            </button>
+                            <button class="choice-btn" onclick="game.day1EveningIgnore()">
+                                🎮 Hacer otra cosa para distraerte
+                            </button>
+                            ${this.state.sentRequest ? `
+                            <button class="choice-btn" onclick="game.day1StartChat()">
+                                💬 Enviar mensaje a Sara
+                            </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = afterSchoolHTML;
+            }
+
+            day1EveningSearch() {
+                this.state.addKarma(-10);
+                this.state.addConsequence("Buscaste más información sobre Sara en internet");
+                
+                const searchHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">BÚSQUEDA NOCTURNA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 1 - 8:00 PM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Pasas horas buscando información sobre Sara en internet. Encuentras sus cuentas en otras redes,
+                            un blog que tenía cuando era más joven, y fotos de eventos familiares.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Es sorprendente cuánta información hay disponible públicamente. Cuanto más encuentras,
+                            más quieres saber. Es como un rompecabezas que necesitas completar.
+                        </p>
+                        <p style="color: var(--accent-red); margin-bottom: 20px;">
+                            Son las 11:00 PM. Has estado buscando durante 3 horas seguidas.
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day1NightDecide()">
+                                😴 Ir a dormir
+                            </button>
+                            <button class="choice-btn" onclick="game.day1NightContinue()">
+                                🔍 Seguir investigando
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = searchHTML;
+            }
+
+            day1EveningIgnore() {
+                this.state.addKarma(10);
+                this.state.addAwareness(5);
+                this.state.addConsequence("Elegiste distraerte en lugar de investigar");
+                
+                const ignoreEveningHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">DISTRACCIÓN</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 1 - 8:00 PM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Decides jugar videojuegos para distraerte. Durante un par de horas, logras olvidarte de Sara
+                            y de esa extraña sensación que sentiste al ver su perfil.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Pero cuando te vas a dormir, su nombre vuelve a aparecer en tu mente. 
+                            Te preguntas si mañana volverás a sentir lo mismo.
+                        </p>
+                        <button class="btn" onclick="game.startDay2()" style="margin-top: 20px;">
+                            😴 Ir a dormir
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = ignoreEveningHTML;
+            }
+
+            day1StartChat() {
+                this.startConversation();
+            }
+
+            startConversation() {
+                this.conversationStep = 0;
+                this.showChatInterface();
+            }
+
+            showChatInterface() {
+                const chatHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">CHAT CON SARA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día ${this.state.day} - ${this.getTimeOfDay()}</div>
+                        <div class="chat-container" id="chatContainer">
+                            <div style="text-align: center; color: var(--text-secondary); margin-bottom: 10px;">
+                                ─── Conversación iniciada ───
+                            </div>
+                            <div class="typing-indicator" id="initialTyping">
+                                <span class="typing-dot"></span>
+                                <span class="typing-dot"></span>
+                                <span class="typing-dot"></span>
+                            </div>
+                        </div>
+                        <div id="choicesArea"></div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = chatHTML;
+                
+                setTimeout(() => {
+                    const typingIndicator = document.getElementById('initialTyping');
+                    if (typingIndicator) typingIndicator.remove();
+                    this.addReceivedMessage('Sara', '👧', `Hola... ¿Eres ${this.state.playerName} de la clase de matemáticas?`);
+                    
+                    setTimeout(() => {
+                        this.showConversationChoices(0);
+                    }, 1000);
+                }, 2000);
+            }
+
+            getTimeOfDay() {
+                if (this.state.day === 1) return "8:00 PM";
+                if (this.state.day === 2) return "7:00 PM";
+                if (this.state.day === 3) return "9:00 PM";
+                return "Noche";
+            }
+
+            addReceivedMessage(name, avatar, text) {
+                const chatContainer = document.getElementById('chatContainer');
+                if (!chatContainer) return;
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'chat-message received';
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">${avatar}</div>
+                    <div>
+                        <span class="message-name">${name}</span>
+                        <div class="message-bubble">${text}</div>
+                    </div>
+                `;
+                chatContainer.appendChild(messageDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                
+                this.state.chatHistory.push({ type: 'received', name, avatar, text });
+            }
+
+            addSentMessage(text) {
+                const chatContainer = document.getElementById('chatContainer');
+                if (!chatContainer) return;
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'chat-message sent';
+                messageDiv.innerHTML = `
+                    <div>
+                        <span class="message-name">${this.state.playerName}</span>
+                        <div class="message-bubble">${text}</div>
+                    </div>
+                    <div class="message-avatar">👤</div>
+                `;
+                chatContainer.appendChild(messageDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                
+                this.state.chatHistory.push({ type: 'sent', name: this.state.playerName, avatar: '👤', text });
+            }
+
+            showConversationChoices(step) {
+                const choices = this.getConversationChoices(step);
+                const choicesArea = document.getElementById('choicesArea');
+                if (!choicesArea) return;
+                
+                choicesArea.innerHTML = `
+                    <div class="choices-container">
+                        ${choices.map((choice, index) => `
+                            <button class="choice-btn" onclick="game.makeConversationChoice(${step}, ${index})">
+                                ${choice.text}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            getConversationChoices(step) {
+                const choices = {
+                    0: [
+                        { text: 'Sí, soy yo. ¿Cómo estás?', karma: 10, trust: 10, response: '¡Qué bien! Te he visto en clase pero eres muy callado. Casi no hablas con nadie.' },
+                        { text: '¿Quién pregunta?', karma: -10, trust: -10, response: 'Soy Sara, me siento atrás en clase. Solo quería saludar.' },
+                        { text: '¿Cómo sabes mi nombre?', karma: -5, trust: -5, response: 'Somos compañeros de clase desde hace meses. Es normal saber los nombres.' }
+                    ],
+                    1: [
+                        { text: 'Sí, soy algo tímido. No me gusta llamar la atención.', karma: 10, trust: 10, response: 'Entiendo. A mí también me cuesta a veces, pero trato de ser amable.' },
+                        { text: 'No tengo nada que decirle a nadie en esa clase.', karma: -20, trust: -20, response: 'Vaya... no esperaba esa respuesta. Solo intentaba ser amable.' },
+                        { text: '¿Por qué me hablas ahora después de tanto tiempo?', karma: -5, trust: -5, response: 'Vi que apareciste en sugerencias de amigos y pensé en saludar.' }
+                    ],
+                    2: [
+                        { text: 'Aprecio que me hables. No mucha gente lo hace.', karma: 15, trust: 15, response: 'De nada. Creo que todos merecen una oportunidad de hacer amigos.' },
+                        { text: '¿Qué quieres de mí? Nadie habla conmigo sin querer algo.', karma: -15, trust: -15, response: 'No quiero nada. Solo pensé que podríamos ser amigos.' },
+                        { text: 'Te he visto con tus amigos. Pareces muy popular.', karma: -10, trust: -10, response: '¿Me has estado observando? Eso es un poco raro...' }
+                    ],
+                    3: [
+                        { text: 'Perdón si soné raro. Es difícil para mí confiar en la gente.', karma: 20, trust: 20, response: 'Está bien. Todos tenemos problemas para confiar a veces.' },
+                        { text: 'Sí, te he observado. Eres interesante para mí.', karma: -30, trust: -30, response: 'Eso es inquietante. No me siento cómoda con eso.' },
+                        { text: 'Solo estaba bromeando. No te lo tomes tan en serio.', karma: -10, trust: -10, response: 'No me gustan ese tipo de bromas. Prefiero conversaciones normales.' }
+                    ],
+                    4: [
+                        { text: 'Gracias por entenderme. ¿Qué te gusta hacer?', karma: 15, trust: 15, response: 'Me gusta dibujar y escuchar música. ¿Y a ti?' },
+                        { text: 'No me gusta hablar de mí. Prefiero saber de ti.', karma: -5, trust: -5, response: 'Está bien, puedo respetar eso. ¿Hay algo que quieras saber?' },
+                        { text: '¿Tienes novio? Quiero saber si estás disponible.', karma: -40, trust: -40, response: '¡¿Qué?! Eso es muy inapropiado. No te conozco para eso.' }
+                    ]
+                };
+                return choices[step] || [];
+            }
+
+            makeConversationChoice(step, choiceIndex) {
+                const choices = this.getConversationChoices(step);
+                const choice = choices[choiceIndex];
+                
+                const choicesArea = document.getElementById('choicesArea');
+                if (choicesArea) choicesArea.innerHTML = '';
+                
+                this.addSentMessage(choice.text);
+                
+                if (choice.karma) this.state.addKarma(choice.karma);
+                if (choice.trust) {
+                    this.state.saraTrust += choice.trust;
+                    if (choice.trust < -20) {
+                        this.state.addSaraFear(10);
+                    }
+                }
+                
+                this.state.messagesSent++;
+                
+                const chatContainer = document.getElementById('chatContainer');
+                if (chatContainer) {
+                    const typingIndicator = document.createElement('div');
+                    typingIndicator.className = 'typing-indicator';
+                    typingIndicator.id = 'responseTyping';
+                    typingIndicator.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+                    chatContainer.appendChild(typingIndicator);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    
+                    setTimeout(() => {
+                        const indicator = document.getElementById('responseTyping');
+                        if (indicator) indicator.remove();
+                        this.addReceivedMessage('Sara', '👧', choice.response);
+                        
+                        setTimeout(() => {
+                            if (step < 4 && this.state.saraTrust > 20) {
+                                this.showConversationChoices(step + 1);
+                            } else {
+                                this.endConversation();
+                            }
+                        }, 1000);
+                    }, 1500);
+                }
+            }
+
+            endConversation() {
+                if (this.state.saraTrust <= 20) {
+                    this.state.saraBlocked = true;
+                    this.state.addConsequence("Sara te ha bloqueado");
+                    this.showBlockedEnding();
+                } else {
+                    this.state.addConsequence("Terminaste la conversación con Sara");
+                    this.startDay2();
+                }
+            }
+
+            showBlockedEnding() {
+                this.state.isGameOver = true;
+                const endingHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">BLOQUEADO</h1>
+                    </div>
+                    <div class="game-content" style="justify-content: center; align-items: center; text-align: center;">
+                        <div style="font-size: 3rem; margin-bottom: 20px;">🚫</div>
+                        <h2 style="color: var(--text-primary); margin-bottom: 20px;">Sara te ha bloqueado</h2>
+                        <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px;">
+                            Tu comportamiento hizo que Sara se sintiera incómoda.<br>
+                            Ha bloqueado tu cuenta y ha avisado a sus amigos.
+                        </p>
+                        <button class="btn" onclick="game.startGame()" style="padding: 15px 30px;">🔄 VOLVER A INTENTARLO</button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = endingHTML;
+            }
+
+            day1NightDecide() {
+                this.state.addAwareness(5);
+                this.startDay2();
+            }
+
+            day1NightContinue() {
+                this.state.addKarma(-15);
+                this.state.addFear(10);
+                this.state.addConsequence("Seguiste investigando hasta altas horas de la noche");
+                
+                const continueHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">INVESTIGACIÓN PROFUNDA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 1 - 2:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Son las 2:00 AM. Has estado investigando durante más de 6 horas. 
+                            Has encontrado su dirección exacta, los nombres de sus familiares, 
+                            y hasta su horario de clases completo.
+                        </p>
+                        <p style="color: var(--accent-red); margin-bottom: 20px;">
+                            Tus ojos arden, pero no puedes dejar de buscar. Hay algo adictivo en esto.
+                        </p>
+                        <button class="btn" onclick="game.startDay2()" style="margin-top: 20px;">
+                            😴 Finalmente ir a dormir
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = continueHTML;
+            }
+
+            startDay2() {
+                this.state.day = 2;
+                this.state.chapter = 2;
+                this.showDay2Morning();
+            }
+
+            showDay2Morning() {
+                const morningHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">DÍA 2</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 2 - 7:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Te despiertas cansado. Los sueños han sido extraños, llenos de imágenes de pantallas 
+                            y perfiles de redes sociales. Revisas tu teléfono inmediatamente.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            ${this.state.sentRequest ? 'Sara ha aceptado tu solicitud. Puedes ver su perfil completo ahora.' : 
+                            'Aún no has enviado solicitud a Sara. Su perfil sigue siendo público pero limitado.'}
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day2CheckProfile()">
+                                📱 Revisar el perfil de Sara
+                            </button>
+                            <button class="choice-btn" onclick="game.day2GoToSchool()">
+                                🏫 Ir a la escuela
+                            </button>
+                            ${!this.state.sentRequest ? `
+                            <button class="choice-btn" onclick="game.day2SendRequest()">
+                                ✉️ Enviar solicitud ahora
+                            </button>
+                            ` : `
+                            <button class="choice-btn" onclick="game.day2MessageSara()">
+                                💬 Enviar mensaje a Sara
+                            </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = morningHTML;
+            }
+
+            day2CheckProfile() {
+                this.state.addKarma(-5);
+                this.state.addConsequence("Revisaste el perfil de Sara de nuevo");
+                
+                const profileHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">PERFIL DE SARA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 2 - 7:30 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Sara ha publicado una foto nueva con sus amigos. Se ven felices en una cafetería.
+                            Hay comentarios de otras personas que la quieren y aprecian.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Sientes algo extraño al ver la foto. No es exactamente envidia... es más como
+                            una sensación de que ella no merece ser tan feliz. Te sorprendes a ti mismo
+                            con ese pensamiento.
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day2CommentSomething()">
+                                💬 Comentar algo en la foto
+                            </button>
+                            <button class="choice-btn" onclick="game.day2JustLook()">
+                                👀 Solo mirar
+                            </button>
+                            <button class="choice-btn" onclick="game.day2GoToSchool()">
+                                🏫 Ir a la escuela
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = profileHTML;
+            }
+
+            day2CommentSomething() {
+                this.state.addKarma(-15);
+                this.state.addConsequence("Comentaste algo inapropiado en la foto de Sara");
+                
+                const commentHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">COMENTARIO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 2 - 7:45 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Dejas un comentario: "Qué bonita te ves... ¿quién tomó la foto? 😏"
+                            No es exactamente ofensivo, pero hay algo en el tono que suena extraño
+                            incluso para ti.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Inmediatamente después de publicarlo, sientes una punzada de arrepentimiento.
+                            Pero no lo borras.
+                        </p>
+                        <button class="btn" onclick="game.day2GoToSchool()" style="margin-top: 20px;">
+                            🏫 Ir a la escuela
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = commentHTML;
+            }
+
+            day2JustLook() {
+                this.state.addKarma(-5);
+                this.state.addConsequence("Solo miraste la foto");
+                
+                const justLookHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">SOLO MIRANDO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 2 - 7:40 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Miras la foto sin comentar nada. Después de un rato, cierras la aplicación
+                            y te preparas para ir a la escuela.
+                        </p>
+                        <button class="btn" onclick="game.day2GoToSchool()" style="margin-top: 20px;">
+                            🏫 Ir a la escuela
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = justLookHTML;
+            }
+
+            day2GoToSchool() {
+                const schoolHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">EN LA ESCUELA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 2 - 8:30 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Llegas a la escuela. Hoy tienes matemáticas en la misma clase que Sara.
+                            Ella está sentada con sus amigos, riendo y conversando.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Por un momento, sus miradas se cruzan. Ella sonríe brevemente, 
+                            pero no estás seguro de si es para ti o para alguien más.
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day2TalkToSara()">
+                                💬 Intentar hablar con ella
+                            </button>
+                            <button class="choice-btn" onclick="game.day2ObserveSara()">
+                                👁️ Observarla desde lejos
+                            </button>
+                            <button class="choice-btn" onclick="game.day2IgnoreSara()">
+                                🙈 Ignorarla completamente
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = schoolHTML;
+            }
+
+            day2TalkToSara() {
+                this.state.addKarma(5);
+                this.state.addConsequence("Intentaste hablar con Sara en persona");
+                
+                const talkHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">CARA A CARA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 2 - 10:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Te acercas a Sara durante el recreo. Ella está con sus amigos, pero te ve acercarte.
+                            Hay un momento de tensión mientras esperas a que termine su conversación.
+                        </p>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            "Hola... ¿Puedo hablar contigo un momento?" - dices, sintiéndote torpe.
+                            Sara te mira con curiosidad, luego asiente y se aparta de sus amigos.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            "Claro, ¿qué pasa?" - responde ella, con una sonrisa educada.
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day2TalkNormal()">
+                                💬 Tener una conversación normal
+                            </button>
+                            <button class="choice-btn" onclick="game.day2TalkWeird()">
+                                😳 Decir algo raro
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = talkHTML;
+            }
+
+            day2TalkNormal() {
+                this.state.addKarma(10);
+                this.state.saraTrust += 10;
+                this.state.addConsequence("Tuviste una conversación agradable con Sara");
+                
+                const normalTalkHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">CONVERSACIÓN NORMAL</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 2 - 10:15 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Hablas con Sara sobre las clases, los profesores, y cosas cotidianas. 
+                            La conversación fluye naturalmente y por un momento te olvidas de todas 
+                            las búsquedas nocturnas y los perfiles en redes sociales.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            "Fue agradable hablar contigo" - dice Sara antes de volver con sus amigos.
+                            Sientes una pequeña victoria, pero también algo de culpa por lo que has estado haciendo.
+                        </p>
+                        <button class="btn" onclick="game.day2AfterSchool()" style="margin-top: 20px;">
+                            📚 Continuar el día
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = normalTalkHTML;
+            }
+
+            day2TalkWeird() {
+                this.state.addKarma(-20);
+                this.state.saraTrust -= 20;
+                this.state.addSaraFear(15);
+                this.state.addConsequence("Dijiste algo inapropiado a Sara");
+                
+                const weirdTalkHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">INCÓMODO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 2 - 10:15 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            "Te he estado observando. Sabes, en clase y en línea. Eres muy interesante."
+                            Las palabras salen de tu boca antes de que puedas detenerlas.
+                        </p>
+                        <p style="color: var(--accent-red); margin-bottom: 20px;">
+                            Sara da un paso atrás. Su sonrisa desaparece.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            "Eso es... raro. No me siento cómoda con que alguien me 'observe'." - dice ella, 
+                            antes de volver rápidamente con sus amigos. La ves susurrarles algo.
+                        </p>
+                        <button class="btn" onclick="game.day2AfterSchool()" style="margin-top: 20px;">
+                            📚 Continuar el día
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = weirdTalkHTML;
+            }
+
+            day2ObserveSara() {
+                this.state.addKarma(-15);
+                this.state.addFear(5);
+                this.state.addConsequence("Observaste a Sara desde lejos");
+                
+                const observeHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">OBSERVANDO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 2 - 10:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Te quedas en una esquina del patio, observando a Sara y sus amigos. 
+                            Anotas mentalmente cada detalle: cómo se ríe, con quién habla, 
+                            qué hace durante el recreo.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Sabes que esto no es normal, pero no puedes evitarlo. Hay algo fascinante
+                            en tener este conocimiento sin que ella lo sepa.
+                        </p>
+                        <button class="btn" onclick="game.day2AfterSchool()" style="margin-top: 20px;">
+                            📚 Continuar el día
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = observeHTML;
+            }
+
+            day2IgnoreSara() {
+                this.state.addKarma(5);
+                this.state.addConsequence("Ignoraste a Sara en la escuela");
+                
+                const ignoreHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">IGNORANDO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 2 - 10:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Decides ignorar a Sara y concentrarte en tus estudios. 
+                            Es lo correcto, te dices. No deberías estar pensando en ella.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Pero durante toda la mañana, no puedes evitar que tu mirada 
+                            se dirija hacia donde ella está sentada.
+                        </p>
+                        <button class="btn" onclick="game.day2AfterSchool()" style="margin-top: 20px;">
+                            📚 Continuar el día
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = ignoreHTML;
+            }
+
+            day2SendRequest() {
+                this.state.sentRequest = true;
+                this.state.addConsequence("Enviaste solicitud a Sara el segundo día");
+                this.state.showNotification("✉️ Solicitud enviada", 'warning');
+                this.day2GoToSchool();
+            }
+
+            day2MessageSara() {
+                this.conversationStep = 0;
+                this.showChatInterface();
+            }
+
+            day2AfterSchool() {
+                const afterSchoolHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">DÍA 2 - DESPUÉS DE CLASES</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 2 - 4:00 PM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Llegas a casa después de la escuela. El día ha sido extraño. 
+                            No puedes dejar de pensar en Sara y en todo lo que sabes sobre ella.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Te sientas frente a la computadora. Sabes que deberías hacer otra cosa,
+                            pero hay algo que te impulsa a seguir investigando.
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day2EveningResearch()">
+                                🔍 Investigar más sobre Sara
+                            </button>
+                            <button class="choice-btn" onclick="game.day2EveningCreateFake()">
+                                👤 Crear una cuenta falsa
+                            </button>
+                            <button class="choice-btn" onclick="game.day2EveningDistract()">
+                                🎮 Distraerte con otra cosa
+                            </button>
+                            ${this.state.sentRequest ? `
+                            <button class="choice-btn" onclick="game.day2EveningMessage()">
+                                💬 Enviar mensaje a Sara
+                            </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = afterSchoolHTML;
+            }
+
+            day2EveningResearch() {
+                this.state.addKarma(-15);
+                this.state.addFear(10);
+                this.state.addConsequence("Seguiste investigando sobre Sara");
+                
+                const researchHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">INVESTIGACIÓN CONTINUA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 2 - 8:00 PM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Pasas horas investigando. Encuentras su cuenta en una red social antigua,
+                            fotos de cuando era más joven, y comentarios que ha hecho en foros.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Has creado un archivo mental con toda su información. Sabes dónde vive,
+                            cuáles son sus rutinas, y quiénes son sus amigos más cercanos.
+                        </p>
+                        <p style="color: var(--accent-red); margin-bottom: 20px;">
+                            Son las 11:00 PM. Has estado investigando durante 7 horas.
+                        </p>
+                        <button class="btn" onclick="game.startDay3()" style="margin-top: 20px;">
+                            😴 Ir a dormir
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = researchHTML;
+            }
+
+            day2EveningCreateFake() {
+                this.state.fakeAccounts++;
+                this.state.addKarma(-30);
+                this.state.addPoliceSuspicion(10);
+                this.state.addConsequence("Creaste una cuenta falsa para observar a Sara");
+                
+                const fakeHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">CUENTA FALSA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 2 - 9:00 PM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Creas una cuenta falsa con un nombre inventado y una foto de perfil genérica.
+                            Usas esta cuenta para enviar una solicitud de amistad a Sara.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Sabes que esto está mal. Cada clic te aleja más de la persona que creías ser.
+                            Pero hay algo adictivo en este juego de identidades.
+                        </p>
+                        <button class="btn" onclick="game.startDay3()" style="margin-top: 20px;">
+                            😴 Ir a dormir
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = fakeHTML;
+            }
+
+            day2EveningDistract() {
+                this.state.addKarma(10);
+                this.state.addAwareness(10);
+                this.state.addConsequence("Elegiste distraerte en lugar de seguir investigando");
+                
+                const distractHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">DISTRACCIÓN</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 2 - 8:00 PM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Decides ver una película para distraerte. Durante un par de horas,
+                            logras no pensar en Sara ni en las búsquedas nocturnas.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Te sientes mejor. Tal vez puedas simplemente olvidar todo esto
+                            y volver a tu vida normal.
+                        </p>
+                        <button class="btn" onclick="game.startDay3()" style="margin-top: 20px;">
+                            😴 Ir a dormir
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = distractHTML;
+            }
+
+            day2EveningMessage() {
+                this.showChatInterface();
+            }
+
+            startDay3() {
+                this.state.day = 3;
+                this.state.chapter = 3;
+                this.showDay3Morning();
+            }
+
+            showDay3Morning() {
+                const morningHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">DÍA 3</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 3 - 7:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Te despiertas con una sensación de inquietud. Revisas tu teléfono inmediatamente.
+                            Hay una notificación: Sara ha publicado algo nuevo.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            ${this.state.fakeAccounts > 0 ? 'Tu cuenta falsa también ha recibido una notificación.' : ''}
+                            ${this.state.saraTrust < 30 ? 'Sara no ha respondido tus mensajes recientes.' : ''}
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day3CheckPhone()">
+                                📱 Revisar el teléfono
+                            </button>
+                            <button class="choice-btn" onclick="game.day3IgnorePhone()">
+                                🙈 Ignorar el teléfono
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = morningHTML;
+            }
+
+            day3CheckPhone() {
+                this.state.addKarma(-5);
+                this.state.addConsequence("Revisaste tu teléfono inmediatamente");
+                
+                const checkHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">TELÉFONO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 3 - 7:15 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Sara ha publicado una foto en el parque. Parece que fue ayer por la tarde.
+                            Hay varios comentarios de sus amigos.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Te das cuenta de que conoces exactamente en qué parte del parque está.
+                            Has visto tantas fotos de ese lugar que podrías encontrarlo con los ojos cerrados.
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day3GoToPark()">
+                                🌳 Ir al parque a "coincidir"
+                            </button>
+                            <button class="choice-btn" onclick="game.day3StayHome()">
+                                🏠 Quedarte en casa
+                            </button>
+                            <button class="choice-btn" onclick="game.day3GoToSchool()">
+                                🏫 Ir a la escuela
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = checkHTML;
+            }
+
+            day3IgnorePhone() {
+                this.state.addKarma(10);
+                this.state.addAwareness(10);
+                this.state.addConsequence("Ignoraste tu teléfono");
+                
+                const ignorePhoneHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">IGNORANDO EL TELÉFONO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 3 - 7:15 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Decides no revisar tu teléfono. Te preparas para la escuela sin mirar
+                            las notificaciones. Es un pequeño acto de resistencia.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Durante el desayuno, tu teléfono vibra varias veces. Lo ignoras.
+                            Sientes una pequeña victoria personal.
+                        </p>
+                        <button class="btn" onclick="game.day3GoToSchool()" style="margin-top: 20px;">
+                            🏫 Ir a la escuela
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = ignorePhoneHTML;
+            }
+
+            day3GoToPark() {
+                this.state.addKarma(-30);
+                this.state.addFear(20);
+                this.state.addPoliceSuspicion(15);
+                this.state.addConsequence("Fuiste al parque a buscar a Sara");
+                
+                const parkHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">EL PARQUE</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 3 - 11:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Faltas a la escuela y vas al parque. Sabes que Sara suele ir los sábados,
+                            pero hoy es miércoles. Aún así, tienes la esperanza de verla.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            El parque está casi vacío. Te sientas en un banco y observas a la gente.
+                            Después de una hora, te das cuenta de lo que estás haciendo.
+                        </p>
+                        <p style="color: var(--accent-red); margin-bottom: 20px;">
+                            Has faltado a la escuela para buscar a alguien que ni siquiera sabe que existes.
+                        </p>
+                        <button class="btn" onclick="game.day3AfterPark()" style="margin-top: 20px;">
+                            🏠 Volver a casa
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = parkHTML;
+            }
+
+            day3StayHome() {
+                this.state.addKarma(5);
+                this.state.addConsequence("Decidiste quedarte en casa");
+                
+                const stayHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">EN CASA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 3 - 9:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Decides quedarte en casa. Te sientes confundido por tus propios pensamientos.
+                            ¿Por qué habías considerado ir al parque? ¿Qué esperabas encontrar?
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Pasas el resto de la mañana tratando de entender tus propias motivaciones.
+                        </p>
+                        <button class="btn" onclick="game.day3Afternoon()" style="margin-top: 20px;">
+                            📚 Continuar el día
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = stayHTML;
+            }
+
+            day3GoToSchool() {
+                const schoolHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">EN LA ESCUELA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 3 - 8:30 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Hoy Sara no está en la escuela. Te preguntas si estará enferma o si simplemente
+                            decidió no venir. La incertidumbre te carcome por dentro.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Durante las clases, no puedes concentrarte. Sigues mirando su asiento vacío.
+                            ¿Dónde está? ¿Qué está haciendo?
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day3AskAboutSara()">
+                                💬 Preguntar por Sara
+                            </button>
+                            <button class="choice-btn" onclick="game.day3StayQuiet()">
+                                🤐 No preguntar
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = schoolHTML;
+            }
+
+            day3AskAboutSara() {
+                this.state.addKarma(-5);
+                this.state.addConsequence("Preguntaste por Sara");
+                
+                const askHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">PREGUNTANDO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 3 - 10:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Le preguntas a un compañero si sabe por qué Sara no vino hoy.
+                            Te mira con curiosidad antes de responder.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            "No sé, tal vez está enferma. ¿Por qué preguntas?" - responde.
+                            Te das cuenta de que has llamado la atención innecesariamente.
+                        </p>
+                        <button class="btn" onclick="game.day3AfterSchool()" style="margin-top: 20px;">
+                            📚 Continuar el día
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = askHTML;
+            }
+
+            day3StayQuiet() {
+                this.state.addKarma(5);
+                this.state.addConsequence("No preguntaste por Sara");
+                
+                const quietHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">EN SILENCIO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 3 - 10:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Decides no preguntar por Sara. Es lo más prudente.
+                            Nadie debería notar tu interés en ella.
+                        </p>
+                        <button class="btn" onclick="game.day3AfterSchool()" style="margin-top: 20px;">
+                            📚 Continuar el día
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = quietHTML;
+            }
+
+            day3AfterPark() {
+                this.startDay4();
+            }
+
+            day3Afternoon() {
+                this.startDay4();
+            }
+
+            day3AfterSchool() {
+                this.startDay4();
+            }
+
+            startDay4() {
+                this.state.day = 4;
+                this.state.chapter = 4;
+                this.showDay4Morning();
+            }
+
+            showDay4Morning() {
+                const morningHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">DÍA 4</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 4 - 7:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Te despiertas con la sensación de que algo ha cambiado. Revisas tu teléfono.
+                            Hay una notificación que te hace detener la respiración.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            ${this.state.policeSuspicion > 30 ? 'Hay un mensaje de un número desconocido. Te preguntan sobre tu actividad en línea.' : 
+                            'Sara ha publicado una historia. Se la ve en su casa, aparentemente enferma.'}
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day4CheckMessage()">
+                                📱 Revisar el mensaje
+                            </button>
+                            <button class="choice-btn" onclick="game.day4IgnoreMessage()">
+                                🙈 Ignorar
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = morningHTML;
+            }
+
+            day4CheckMessage() {
+                this.state.addKarma(-5);
+                this.state.addConsequence("Revisaste el mensaje");
+                
+                const messageHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">MENSAJE RECIBIDO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 4 - 7:15 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            ${this.state.policeSuspicion > 30 ? 
+                            'El mensaje dice: "Hola, soy el oficial Martínez. Nos gustaría hacerte algunas preguntas sobre tu actividad en línea. Por favor contáctanos."' : 
+                            'Sara ha publicado una historia desde su casa. Se la ve envuelta en una manta, con una taza de té. Escribe: "Día de descanso forzado 🤒"'}
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            ${this.state.policeSuspicion > 30 ? 
+                            'Sientes que el mundo se detiene. ¿Cómo te encontraron? ¿Qué saben?' : 
+                            'Sientes alivio al saber que solo está enferma. Pero también algo de culpa por haberte preocupado tanto.'}
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day4Respond()">
+                                💬 Responder
+                            </button>
+                            <button class="choice-btn" onclick="game.day4DontRespond()">
+                                🤐 No responder
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = messageHTML;
+            }
+
+            day4IgnoreMessage() {
+                this.state.addKarma(5);
+                this.state.addConsequence("Ignoraste el mensaje");
+                
+                const ignoreHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">IGNORANDO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 4 - 7:15 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Decides ignorar el mensaje. Sea lo que sea, no quieres lidiar con ello ahora.
+                            Te preparas para la escuela como si nada hubiera pasado.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Pero durante todo el camino a la escuela, no puedes dejar de pensar en ello.
+                        </p>
+                        <button class="btn" onclick="game.day4School()" style="margin-top: 20px;">
+                            🏫 Ir a la escuela
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = ignoreHTML;
+            }
+
+            day4Respond() {
+                this.state.addKarma(-10);
+                this.state.addConsequence("Respondiste al mensaje");
+                
+                const respondHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">RESPONDIENDO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 4 - 7:30 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            ${this.state.policeSuspicion > 30 ? 
+                            'Respondes: "¿De qué se trata?" con las manos temblando. La respuesta llega rápido: "Preferiríamos hablar en persona. ¿Puedes venir a la estación esta tarde?"' : 
+                            'Respondes a la historia de Sara: "Espero que te mejores pronto 🙏". Ella responde con un "Gracias 😊"'}
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            ${this.state.policeSuspicion > 30 ? 
+                            'Tu mundo se derrumba. La policía quiere hablar contigo. ¿Qué has hecho?' : 
+                            'Sientes una pequeña victoria. Sara te ha respondido. Tal vez no todo está perdido.'}
+                        </p>
+                        <button class="btn" onclick="game.day4AfterResponse()" style="margin-top: 20px;">
+                            Continuar
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = respondHTML;
+            }
+
+            day4DontRespond() {
+                this.state.addKarma(5);
+                this.state.addConsequence("No respondiste");
+                
+                const noRespondHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">SIN RESPUESTA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 4 - 7:30 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Decides no responder. No sabes qué decir y prefieres no empeorar las cosas.
+                        </p>
+                        <button class="btn" onclick="game.day4School()" style="margin-top: 20px;">
+                            🏫 Ir a la escuela
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = noRespondHTML;
+            }
+
+            day4School() {
+                const schoolHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">EN LA ESCUELA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 4 - 8:30 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            La escuela se siente diferente hoy. Hay un ambiente extraño, como si todos
+                            estuvieran hablando en susurros sobre algo.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Notas que algunos compañeros te miran de forma extraña. 
+                            ¿Es tu imaginación o realmente están hablando de ti?
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day4Investigate()">
+                                🔍 Investigar qué pasa
+                            </button>
+                            <button class="choice-btn" onclick="game.day4StayLow()">
+                                🤐 Mantener perfil bajo
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = schoolHTML;
+            }
+
+            day4Investigate() {
+                this.state.addKarma(-5);
+                this.state.addConsequence("Investigaste qué estaba pasando");
+                
+                const investigateHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">INVESTIGANDO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 4 - 10:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Te enteras de que alguien ha estado difundiendo rumores sobre una estudiante.
+                            Los rumores son crueles y personales. Todos parecen saber de quién se trata.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            ${this.state.fakeAccounts > 0 ? 'Te das cuenta con horror de que los rumores comenzaron desde una cuenta falsa... tu cuenta falsa.' : 
+                            'Escuchas el nombre de Sara en los pasillos. Algo malo ha pasado.'}
+                        </p>
+                        <p style="color: var(--accent-red); margin-bottom: 20px;">
+                            Esto ha ido demasiado lejos.
+                        </p>
+                        <button class="btn" onclick="game.day4AfterSchool()" style="margin-top: 20px;">
+                            📚 Continuar el día
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = investigateHTML;
+            }
+
+            day4StayLow() {
+                this.state.addKarma(5);
+                this.state.addConsequence("Mantuviste perfil bajo");
+                
+                const stayLowHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">PERFIL BAJO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 4 - 10:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Decides mantener un perfil bajo. No quieres llamar la atención.
+                            Te sientas en un rincón y tratas de pasar desapercibido.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Escuchas fragmentos de conversaciones, pero no te atreves a preguntar nada.
+                        </p>
+                        <button class="btn" onclick="game.day4AfterSchool()" style="margin-top: 20px;">
+                            📚 Continuar el día
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = stayLowHTML;
+            }
+
+            day4AfterResponse() {
+                if (this.state.policeSuspicion > 30) {
+                    this.showPoliceStation();
+                } else {
+                    this.startDay5();
+                }
+            }
+
+            showPoliceStation() {
+                this.state.policeInvolved = true;
+                const policeHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">ESTACIÓN DE POLICÍA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 4 - 4:00 PM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Vas a la estación de policía como te pidieron. El oficial Martínez te recibe
+                            con una expresión seria. Te hace pasar a una sala de interrogatorios.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            "Hemos recibido reportes sobre actividad sospechosa en línea relacionada con
+                            una estudiante de tu escuela. ¿Sabes algo al respecto?" - pregunta.
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.policeConfess()">
+                                💬 Confesar todo
+                            </button>
+                            <button class="choice-btn" onclick="game.policeDeny()">
+                                🙅 Negar todo
+                            </button>
+                            <button class="choice-btn" onclick="game.policeLie()">
+                                🤥 Mentir parcialmente
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = policeHTML;
+            }
+
+            policeConfess() {
+                this.state.addKarma(20);
+                this.state.addAwareness(30);
+                this.state.addConsequence("Confesaste todo a la policía");
+                
+                const confessHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">CONFESIÓN</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 4 - 4:30 PM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Decides confesar todo. Hablas sobre las búsquedas nocturnas, la cuenta falsa,
+                            los rumores. Mientras hablas, sientes que un peso se quita de tus hombros.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            El oficial Martínez te escucha en silencio. Cuando terminas, asiente lentamente.
+                            "Aprecio tu honestidad. Esto ayudará en tu caso. Pero habrá consecuencias."
+                        </p>
+                        <p style="color: var(--accent-green); margin-bottom: 20px;">
+                            Has dado el primer paso hacia la redención.
+                        </p>
+                        <button class="btn" onclick="game.showEnding('confession')" style="margin-top: 20px;">
+                            Ver desenlace
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = confessHTML;
+            }
+
+            policeDeny() {
+                this.state.addKarma(-30);
+                this.state.addPoliceSuspicion(20);
+                this.state.addConsequence("Negaste todo ante la policía");
+                
+                const denyHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">NEGACIÓN</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 4 - 4:30 PM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Niega todo. "No sé de qué me habla. Yo no he hecho nada" - dices, 
+                            tratando de mantener la calma.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            El oficial Martínez te mira fijamente. "Tenemos registros de actividad 
+                            desde tu dirección IP. Será mejor que reconsideres tu respuesta."
+                        </p>
+                        <p style="color: var(--accent-red); margin-bottom: 20px;">
+                            Sientes que el suelo se hunde bajo tus pies.
+                        </p>
+                        <button class="btn" onclick="game.showEnding('caught')" style="margin-top: 20px;">
+                            Ver desenlace
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = denyHTML;
+            }
+
+            policeLie() {
+                this.state.addKarma(-20);
+                this.state.addPoliceSuspicion(10);
+                this.state.addConsequence("Mentiste parcialmente a la policía");
+                
+                const lieHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">MENTIRA PARCIAL</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 4 - 4:30 PM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            "Mire, yo solo... miré su perfil un par de veces. Eso no es ilegal, ¿verdad?"
+                            Tratas de minimizar tus acciones.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            El oficial Martínez toma notas. "¿Y la cuenta falsa? ¿Los mensajes anónimos?"
+                            Tu silencio es la única respuesta.
+                        </p>
+                        <p style="color: var(--accent-red); margin-bottom: 20px;">
+                            Sabes que has cavado tu propia tumba.
+                        </p>
+                        <button class="btn" onclick="game.showEnding('deny')" style="margin-top: 20px;">
+                            Ver desenlace
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = lieHTML;
+            }
+
+            day4AfterSchool() {
+                this.startDay5();
+            }
+
+            startDay5() {
+                this.state.day = 5;
+                this.state.chapter = 5;
+                this.showDay5Morning();
+            }
+
+            showDay5Morning() {
+                const morningHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">DÍA 5</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 5 - 7:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            El quinto día. Te despiertas con una sensación de paranoia. 
+                            Sientes que todos te observan, que todos saben lo que has hecho.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            ${this.state.policeSuspicion > 50 ? 'La policía está investigando activamente. Sabes que es cuestión de tiempo.' : 
+                            'Sara ha vuelto a la escuela. Parece recuperada, pero hay algo diferente en ella.'}
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day5CheckSocial()">
+                                📱 Revisar redes sociales
+                            </button>
+                            <button class="choice-btn" onclick="game.day5AvoidEverything()">
+                                🙈 Evitar todo
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = morningHTML;
+            }
+
+            day5CheckSocial() {
+                this.state.addKarma(-10);
+                this.state.addFear(15);
+                this.state.addConsequence("Revisaste las redes sociales");
+                
+                const socialHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">REDES SOCIALES</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 5 - 7:30 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Las redes sociales están llenas de mensajes de apoyo para Sara.
+                            Alguien ha creado un hashtag: #JusticiaParaSara
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Hay publicaciones sobre el acoso que ha estado sufriendo. 
+                            La gente está furiosa y pide que se encuentre al responsable.
+                        </p>
+                        <p style="color: var(--accent-red); margin-bottom: 20px;">
+                            Tus manos tiemblan mientras lees los comentarios. Algunos piden cárcel.
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day5DeleteAccounts()">
+                                🗑️ Eliminar todas tus cuentas
+                            </button>
+                            <button class="choice-btn" onclick="game.day5KeepWatching()">
+                                👁️ Seguir observando
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = socialHTML;
+            }
+
+            day5AvoidEverything() {
+                this.state.addKarma(10);
+                this.state.addAwareness(15);
+                this.state.addConsequence("Evitaste las redes sociales");
+                
+                const avoidHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">EVITANDO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 5 - 7:30 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Decides no revisar las redes sociales. Es demasiado.
+                            Te preparas para la escuela en silencio, tratando de calmarte.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Pero la ausencia de información es casi peor. Tu mente crea escenarios
+                            peores que la realidad.
+                        </p>
+                        <button class="btn" onclick="game.day5School()" style="margin-top: 20px;">
+                            🏫 Ir a la escuela
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = avoidHTML;
+            }
+
+            day5DeleteAccounts() {
+                this.state.addKarma(15);
+                this.state.addAwareness(20);
+                this.state.addConsequence("Eliminaste tus cuentas");
+                
+                const deleteHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">ELIMINANDO CUENTAS</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 5 - 8:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Eliminas todas tus cuentas de redes sociales. Es un acto simbólico,
+                            pero te hace sentir un poco mejor. Como si pudieras borrar el pasado.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Pero sabes que nada se borra realmente en internet.
+                            La huella digital permanece.
+                        </p>
+                        <button class="btn" onclick="game.day5School()" style="margin-top: 20px;">
+                            🏫 Ir a la escuela
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = deleteHTML;
+            }
+
+            day5KeepWatching() {
+                this.state.addKarma(-20);
+                this.state.addFear(20);
+                this.state.addConsequence("Seguiste observando");
+                
+                const watchingHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">OBSERVANDO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 5 - 8:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            No puedes dejar de mirar. Cada comentario, cada publicación, cada reacción.
+                            Es como ver un accidente de tren en cámara lenta.
+                        </p>
+                        <p style="color: var(--accent-red); margin-bottom: 20px;">
+                            Te das cuenta de que estás obsesionado. Pero no puedes parar.
+                        </p>
+                        <button class="btn" onclick="game.day5School()" style="margin-top: 20px;">
+                            🏫 Ir a la escuela
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = watchingHTML;
+            }
+
+            day5School() {
+                const schoolHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">EN LA ESCUELA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 5 - 8:30 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            La escuela está en ebullición. Todos hablan del acoso a Sara.
+                            Hay una reunión especial convocada por la dirección.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Mientras caminas por los pasillos, sientes que todos te miran.
+                            Aunque sabes que es paranoia, no puedes evitar sentirte observado.
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day5AttendMeeting()">
+                                📋 Asistir a la reunión
+                            </button>
+                            <button class="choice-btn" onclick="game.day5SkipMeeting()">
+                                🏃 Saltarse la reunión
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = schoolHTML;
+            }
+
+            day5AttendMeeting() {
+                this.state.addKarma(5);
+                this.state.addConsequence("Asististe a la reunión");
+                
+                const meetingHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">REUNIÓN</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 5 - 9:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            La directora habla sobre el acoso digital y sus consecuencias. 
+                            Menciona que la policía está involucrada y que se tomarán medidas.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Mientras habla, sientes que cada palabra está dirigida a ti.
+                            Aunque nadie te señala, sabes que eres el culpable.
+                        </p>
+                        <button class="btn" onclick="game.day5AfterSchool()" style="margin-top: 20px;">
+                            📚 Continuar el día
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = meetingHTML;
+            }
+
+            day5SkipMeeting() {
+                this.state.addKarma(-10);
+                this.state.addConsequence("Te saltaste la reunión");
+                
+                const skipHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">SALTANDO LA REUNIÓN</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 5 - 9:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            No puedes soportar la idea de sentarte en esa reunión.
+                            Te escondes en el baño hasta que termina.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Escuchas los murmullos de otros estudiantes que también se saltaron la reunión.
+                            Hablan sobre lo que está pasando con Sara.
+                        </p>
+                        <button class="btn" onclick="game.day5AfterSchool()" style="margin-top: 20px;">
+                            📚 Continuar el día
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = skipHTML;
+            }
+
+            day5AfterSchool() {
+                this.startDay6();
+            }
+
+            startDay6() {
+                this.state.day = 6;
+                this.state.chapter = 6;
+                this.showDay6Morning();
+            }
+
+            showDay6Morning() {
+                const morningHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">DÍA 6</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 6 - 7:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            El sexto día. Te despiertas con un nudo en el estómago.
+                            Algo te dice que hoy será un día decisivo.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            ${this.state.policeSuspicion > 60 ? 'Sabes que la policía está cerca. Es solo cuestión de tiempo.' : 
+                            'Sara ha publicado un mensaje pidiendo que se respete su privacidad.'}
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day6Confront()">
+                                💬 Enfrentar la situación
+                            </button>
+                            <button class="choice-btn" onclick="game.day6Hide()">
+                                🙈 Esconderse
+                            </button>
+                            <button class="choice-btn" onclick="game.day6SeekHelp()">
+                                🆘 Buscar ayuda
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = morningHTML;
+            }
+
+            day6Confront() {
+                this.state.addKarma(10);
+                this.state.addAwareness(20);
+                this.state.addConsequence("Decidiste enfrentar la situación");
+                
+                const confrontHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">ENFRENTANDO</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 6 - 8:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Decides enfrentar la situación de una vez por todas.
+                            Vas a la escuela con la intención de hablar con Sara.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Cuando la ves, tu corazón late con fuerza. Es ahora o nunca.
+                        </p>
+                        <div class="choices-container">
+                            <button class="choice-btn" onclick="game.day6Apologize()">
+                                🙏 Disculparse sinceramente
+                            </button>
+                            <button class="choice-btn" onclick="game.day6Explain()">
+                                💬 Intentar explicarse
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = confrontHTML;
+            }
+
+            day6Apologize() {
+                this.state.addKarma(30);
+                this.state.addAwareness(30);
+                this.state.addConsequence("Te disculpaste sinceramente con Sara");
+                
+                const apologizeHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">DISCULPA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 6 - 8:30 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            "Sara, necesito disculparme. He estado haciendo cosas horribles.
+                            Te he estado acosando en línea. Creé cuentas falsas. Difundí rumores."
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Sara te mira con una mezcla de shock y alivio.
+                            "¿Fuiste tú? No sabía si era alguien que conocía o un extraño."
+                        </p>
+                        <p style="color: var(--accent-green); margin-bottom: 20px;">
+                            "Lo siento mucho. Voy a buscar ayuda. Esto no volverá a pasar."
+                        </p>
+                        <button class="btn" onclick="game.showEnding('redemption')" style="margin-top: 20px;">
+                            Ver desenlace
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = apologizeHTML;
+            }
+
+            day6Explain() {
+                this.state.addKarma(-10);
+                this.state.addConsequence("Intentaste explicarte");
+                
+                const explainHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">EXPLICACIÓN</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 6 - 8:30 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            "Sara, déjame explicarte. Yo solo... tenía curiosidad. No era mi intención
+                            hacerte daño. Las cosas se salieron de control."
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Sara te mira con desconfianza. "¿Curiosidad? ¿Crear cuentas falsas para acosarme
+                            es curiosidad? ¿Difundir rumores es curiosidad?"
+                        </p>
+                        <p style="color: var(--accent-red); margin-bottom: 20px;">
+                            Tus excusas suenan vacías incluso para ti.
+                        </p>
+                        <button class="btn" onclick="game.showEnding('confrontation')" style="margin-top: 20px;">
+                            Ver desenlace
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = explainHTML;
+            }
+
+            day6Hide() {
+                this.state.addKarma(-20);
+                this.state.addFear(30);
+                this.state.addConsequence("Decidiste esconderte");
+                
+                const hideHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">ESCONDIÉNDOSE</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 6 - 8:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Decides no ir a la escuela. Te quedas en casa, con las persianas cerradas,
+                            tratando de desaparecer del mundo.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            Tu madre llama a la puerta. "¿No vas a la escuela hoy?" - pregunta.
+                            "No me siento bien" - respondes, con la voz temblorosa.
+                        </p>
+                        <p style="color: var(--accent-red); margin-bottom: 20px;">
+                            Te das cuenta de que no puedes esconderte para siempre.
+                        </p>
+                        <button class="btn" onclick="game.showEnding('escape')" style="margin-top: 20px;">
+                            Ver desenlace
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = hideHTML;
+            }
+
+            day6SeekHelp() {
+                this.state.addKarma(20);
+                this.state.addAwareness(30);
+                this.state.addConsequence("Buscaste ayuda profesional");
+                
+                const helpHTML = `
+                    <div class="game-header">
+                        <h1 class="game-title">BUSCANDO AYUDA</h1>
+                    </div>
+                    ${this.renderStatusBar()}
+                    <div class="game-content">
+                        <div class="day-indicator">📅 Día 6 - 8:00 AM</div>
+                        <p style="color: var(--text-primary); line-height: 1.8; margin-bottom: 20px;">
+                            Decides buscar ayuda. Llamas a una línea de apoyo para salud mental.
+                            Por primera vez, hablas honestamente sobre lo que has estado haciendo.
+                        </p>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                            La persona al otro lado de la línea te escucha sin juzgarte.
+                            Te da recursos y te anima a buscar ayuda profesional.
+                        </p>
+                        <p style="color: var(--accent-green); margin-bottom: 20px;">
+                            Sientes que has dado el primer paso hacia el cambio.
+                        </p>
+                        <button class="btn" onclick="game.showEnding('help')" style="margin-top: 20px;">
+                            Ver desenlace
+                        </button>
+                    </div>
+                `;
+                document.getElementById('gameContent').innerHTML = helpHTML;
+            }
+
+            showEnding(type) {
+                this.state.isGameOver = true;
+                
+                const endings = {
+                    redemption: {
+                        title: 'EL CAMINO DE LA REDENCIÓN',
+                        text: `${this.state.playerName} se disculpó sinceramente con Sara y buscó ayuda profesional. Con terapia y reflexión, comprendió el daño que había causado. Sara aceptó sus disculpas, aunque le llevó tiempo volver a confiar. Ahora ${this.state.playerName} trabaja para educar a otros sobre el acoso digital.`,
+                        emoji: '🌟',
+                        color: '#4ecca3',
+                        details: [
+                            `Karma final: ${this.state.karma}`,
+                            `Conciencia: ${this.state.awareness}`,
+                            `Confianza de Sara: ${this.state.saraTrust}`,
+                            'Te convertiste en defensor contra el acoso digital'
+                        ]
+                    },
+                    confession: {
+                        title: 'LA CONFESIÓN',
+                        text: `${this.state.playerName} confesó todo a la policía. Aceptó las consecuencias legales de sus actos. Aunque enfrenta cargos, su cooperación y remordimiento genuino fueron tomados en cuenta. Está en libertad condicional y asiste a terapia obligatoria.`,
+                        emoji: '💬',
+                        color: '#3498db',
+                        details: [
+                            `Karma final: ${this.state.karma}`,
+                            `Sospecha policial: ${this.state.policeSuspicion}`,
+                            'Cooperaste con la investigación',
+                            'Recibiste una sentencia reducida'
+                        ]
+                    },
+                    caught: {
+                        title: 'ATRAPADO',
+                        text: `${this.state.playerName} negó todo, pero la evidencia digital era abrumadora. La policía encontró registros de todas sus actividades. Fue arrestado y enfrenta cargos graves por acoso digital. La negación solo empeoró su situación.`,
+                        emoji: '🚨',
+                        color: '#8b0000',
+                        details: [
+                            `Karma final: ${this.state.karma}`,
+                            `Sospecha policial: ${this.state.policeSuspicion}`,
+                            'Fuiste arrestado',
+                            'Enfrentas cargos graves'
+                        ]
+                    },
+                    deny: {
+                        title: 'LA NEGACIÓN',
+                        text: `${this.state.playerName} intentó minimizar sus acciones, pero las mentiras se desmoronaron rápidamente. La policía tenía todas las pruebas. Ahora enfrenta las consecuencias de sus actos sin el beneficio de la cooperación.`,
+                        emoji: '🙅',
+                        color: '#e74c3c',
+                        details: [
+                            `Karma final: ${this.state.karma}`,
+                            'Tus mentiras empeoraron tu caso',
+                            'Perdiste la oportunidad de redención'
+                        ]
+                    },
+                    escape: {
+                        title: 'EL ESCAPE',
+                        text: `${this.state.playerName} intentó esconderse del mundo, pero no se puede escapar de uno mismo. La paranoia y la culpa lo consumieron. Se aisló completamente, perdiendo contacto con la realidad y con las personas que podrían haberlo ayudado.`,
+                        emoji: '🏃',
+                        color: '#e67e22',
+                        details: [
+                            `Karma final: ${this.state.karma}`,
+                            `Paranoia: ${this.state.paranoia}`,
+                            'Te aislarte completamente',
+                            'Necesitas ayuda profesional urgente'
+                        ]
+                    },
+                    help: {
+                        title: 'LA BÚSQUEDA DE AYUDA',
+                        text: `${this.state.playerName} buscó ayuda antes de que fuera demasiado tarde. Con apoyo profesional, pudo entender las raíces de su comportamiento y trabajar para cambiar. Aunque aún debe enfrentar las consecuencias de sus actos, tiene esperanza de redención.`,
+                        emoji: '🆘',
+                        color: '#2ecc71',
+                        details: [
+                            `Karma final: ${this.state.karma}`,
+                            `Conciencia: ${this.state.awareness}`,
+                            'Buscaste ayuda a tiempo',
+                            'Tienes esperanza de cambiar'
+                        ]
+                    },
+                    confrontation: {
+                        title: 'LA CONFRONTACIÓN',
+                        text: `${this.state.playerName} intentó explicarse, pero sus excusas solo empeoraron las cosas. Sara no aceptó sus justificaciones y decidió denunciarlo formalmente. La confrontación marcó el fin de cualquier posibilidad de reconciliación.`,
+                        emoji: '⚡',
+                        color: '#e67e22',
+                        details: [
+                            `Karma final: ${this.state.karma}`,
+                            `Confianza de Sara: ${this.state.saraTrust}`,
+                            'Sara te denunció formalmente',
+                            'Las excusas no sirvieron de nada'
+                        ]
+                    }
+                };
+                
+                const ending = endings[type];
+                
+                const endingHTML = `
+                    <div class="game-header" style="background: ${ending.color}22;">
+                        <h1 class="game-title" style="color: ${ending.color};">${ending.title}</h1>
+                    </div>
+                    <div class="game-content">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div style="font-size: 3rem; margin-bottom: 15px;">${ending.emoji}</div>
+                            <p style="line-height: 1.6; color: var(--text-primary); font-size: 1rem;">
+                                ${ending.text}
+                            </p>
+                        </div>
+                        
+                        <h3 style="color: var(--text-primary); margin-bottom: 15px; text-align: center; font-size: 1rem;">
+                            📊 RESUMEN DE TU HISTORIA
+                        </h3>
+                        <div style="background: var(--bg-darker); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            ${ending.details.map(detail => 
+                                `<p style="color: var(--text-secondary); margin-bottom: 8px; font-size: 0.9rem;">• ${detail}</p>`
+                            ).join('')}
+                        </div>
+                        
+                        <h3 style="color: var(--text-primary); margin-bottom: 15px; text-align: center; font-size: 1rem;">
+                            📜 CONSECUENCIAS (${this.state.consequences.length} eventos)
+                        </h3>
+                        <div style="background: var(--bg-darker); padding: 15px; border-radius: 8px; margin-bottom: 20px; max-height: 150px; overflow-y: auto;">
+                            ${this.state.consequences.map(conseq => 
+                                `<p style="color: var(--text-secondary); margin-bottom: 5px; font-size: 0.8rem;">• ${conseq}</p>`
+                            ).join('')}
+                        </div>
+                        
+                        <button class="btn" onclick="game.startGame()" style="width: 100%; padding: 15px; font-size: 1rem;">
+                            🔄 VOLVER A JUGAR
+                        </button>
+                    </div>
+                `;
+                
+                document.getElementById('gameContent').innerHTML = endingHTML;
+            }
+
+            renderStatusBar() {
+                return `
+                    <div class="status-bar">
+                        <div class="status-item" title="Karma">
+                            <span>⚖️</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="karmaBar" style="width: 50%"></div>
+                            </div>
+                        </div>
+                        <div class="status-item" title="Miedo">
+                            <span>😨</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill karma-bad" id="fearBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="status-item" title="Culpa">
+                            <span>😔</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill karma-bad" id="guiltBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="status-item" title="Conciencia">
+                            <span>💡</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill karma-good" id="awarenessBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="status-item" title="Paranoia">
+                            <span>👁️</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill karma-bad" id="paranoiaBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="status-item" title="Policía">
+                            <span>🚨</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill karma-bad" id="policeBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="status-item" title="Miedo de Sara">
+                            <span>😰</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill karma-bad" id="saraFearBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        const game = new DarkGame();
+        window.onload = function() {
+            game.startGame();
+        };
+    </script>
+</body>
+</html>

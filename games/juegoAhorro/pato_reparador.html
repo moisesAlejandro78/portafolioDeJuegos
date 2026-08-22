@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PATO REPARADOR - Cocodrilos Mejorados</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --neon-cyan: #3df2ff;
+    --neon-magenta: #ff3dcb;
+    --neon-yellow: #ffe23d;
+    --bg-deep: #0a0416;
+    --bg-mid: #160a2e;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: radial-gradient(ellipse at 50% -10%, #3a1a63 0%, var(--bg-mid) 45%, var(--bg-deep) 100%);
+    font-family: 'VT323', monospace;
+    color: #eae6ff;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #arcade {
+    position: relative;
+    width: min(96vw, 1100px);
+    aspect-ratio: 1100 / 780;
+    border-radius: 22px;
+    padding: 16px;
+    background: linear-gradient(160deg, #241247, #0e0620 70%);
+    box-shadow:
+      0 0 0 3px #000,
+      0 0 0 6px #3a2065,
+      0 25px 60px -10px rgba(0,0,0,0.85),
+      0 0 70px -10px rgba(61,242,255,0.28);
+  }
+  #marquee {
+    text-align: center;
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(13px, 2.4vw, 24px);
+    letter-spacing: 2px;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 6px var(--neon-yellow), 0 0 18px #ff9d00, 0 0 32px #ff9d00;
+    animation: flicker 3.2s infinite;
+    margin: 0 0 8px 0;
+  }
+  #marquee span { color: var(--neon-cyan); text-shadow: 0 0 6px var(--neon-cyan), 0 0 18px #00c3ff; }
+  @keyframes flicker {
+    0%,19%,21%,23%,80%,100% { opacity: 1; }
+    20%,22%,81% { opacity: 0.55; }
+  }
+  #screen-wrap {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 4px solid #050208;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.9), inset 0 0 90px rgba(120,60,255,0.15);
+  }
+  canvas { display: block; width: 100%; height: auto; background: #050014; }
+  .scanlines {
+    position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(to bottom, rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 1px, transparent 2px, transparent 3px);
+    mix-blend-mode: multiply;
+  }
+  .vignette {
+    position: absolute; inset: 0; pointer-events: none;
+    box-shadow: inset 0 0 130px 45px rgba(0,0,0,0.78);
+  }
+  #hud {
+    position: absolute; top: 8px; left: 0; right: 0;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 0 10px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(8px, 1.25vw, 12px);
+    color: #fff;
+    text-shadow: 0 0 6px rgba(0,0,0,0.9), 0 2px 0 #000;
+    pointer-events: none;
+    z-index: 5;
+    gap: 5px;
+  }
+  #hud .box {
+    background: rgba(5,2,20,0.68);
+    padding: 5px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.15);
+    text-align: center;
+    min-width: 68px;
+  }
+  #hud .water-box { flex: 1; max-width: 230px; }
+  #waterBarOuter {
+    width: 100%; height: 10px; background: rgba(0,0,0,0.5);
+    border-radius: 4px; margin-top: 4px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  #waterBarInner {
+    height: 100%; width: 100%;
+    background: linear-gradient(90deg, #3df2ff, #00a8ff);
+    border-radius: 3px; transition: width 0.15s linear;
+  }
+  .overlay {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: rgba(5,1,18,0.9);
+    text-align: center; z-index: 10; gap: 14px; padding: 20px;
+  }
+  .hidden { display: none !important; }
+  .overlay h1 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(15px, 3.2vw, 28px);
+    color: var(--neon-magenta);
+    text-shadow: 0 0 10px var(--neon-magenta), 0 0 26px #ff007c;
+    margin: 0; line-height: 1.5;
+  }
+  .overlay p {
+    max-width: 540px; font-size: clamp(13px, 2.1vw, 18px);
+    color: #cfc8ff; line-height: 1.45; margin: 0;
+  }
+  .btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(11px, 1.7vw, 15px);
+    background: linear-gradient(180deg, #ffe23d, #ff9d00);
+    color: #241247; border: none; padding: 14px 26px; border-radius: 8px;
+    cursor: pointer; box-shadow: 0 6px 0 #a35800, 0 8px 14px rgba(0,0,0,0.5);
+    letter-spacing: 1px; transition: transform .08s;
+  }
+  .btn:active { transform: translateY(5px); box-shadow: 0 1px 0 #a35800; }
+  .glow-cyan { color: var(--neon-cyan); text-shadow: 0 0 8px var(--neon-cyan); }
+  .glow-magenta { color: var(--neon-magenta); text-shadow: 0 0 8px var(--neon-magenta); }
+  .glow-yellow { color: var(--neon-yellow); text-shadow: 0 0 8px var(--neon-yellow); }
+  #controls-hint {
+    position: absolute; bottom: 6px; left: 0; right: 0;
+    text-align: center; font-size: clamp(9px, 1.4vw, 13px);
+    color: #a79fd8; z-index: 5; pointer-events: none;
+  }
+  #touchpad {
+    position: absolute; z-index: 8; inset: 0;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 12px; pointer-events: none;
+  }
+  #touchpad button {
+    pointer-events: auto; font-family: 'Press Start 2P', monospace;
+    background: rgba(20,8,45,0.55); border: 2px solid rgba(255,255,255,0.25);
+    color: #fff; border-radius: 50%; width: 50px; height: 50px; font-size: 15px;
+  }
+  #dpad { display: grid; grid-template-columns: repeat(3,50px); grid-template-rows: repeat(2,50px); gap: 5px; }
+  #dpad .up { grid-column: 2; grid-row: 1; }
+  #dpad .left { grid-column: 1; grid-row: 2; }
+  #dpad .right { grid-column: 3; grid-row: 2; }
+  #dpad .down { grid-column: 2; grid-row: 2; }
+  #hammerBtn {
+    width: 74px; height: 74px; font-size: 24px;
+    background: radial-gradient(circle at 35% 30%, #ffe23d, #ff7a00);
+    color: #3a1400; border: 2px solid #7a3d00;
+  }
+  @media (hover: hover) { #touchpad { display: none; } }
+  footer#credit { text-align: center; font-size: 11px; color: #6e669c; margin-top: 6px; }
+  #goalBox {
+    position: absolute; top: 56px; left: 50%; transform: translateX(-50%);
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(8px, 1.15vw, 11px);
+    background: rgba(5,2,20,0.72); padding: 4px 10px; border-radius: 6px;
+    border: 1px solid rgba(61,242,255,0.4); color: #3df2ff;
+    z-index: 5; pointer-events: none; white-space: nowrap;
+  }
+  #pipeCountBox {
+    position: absolute; top: 82px; left: 50%; transform: translateX(-50%);
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(7px, 1.05vw, 10px);
+    background: rgba(5,2,20,0.65); padding: 3px 8px; border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.12); color: #b8b0e0;
+    z-index: 5; pointer-events: none;
+  }
+</style>
+</head>
+<body>
+<div id="arcade">
+  <h1 id="marquee">PATO <span>REPARADOR</span> vs COCO DESTRUCTOR</h1>
+  <div id="screen-wrap">
+    <canvas id="game" width="1050" height="640"></canvas>
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+
+    <div id="hud">
+      <div class="box">PUNTOS<br><span id="scoreVal">0</span></div>
+      <div class="box water-box">
+        💧 AGUA<br>
+        <span id="waterSavedVal">0 L</span>
+        <div id="waterBarOuter"><div id="waterBarInner"></div></div>
+        <div style="font-size:9px;margin-top:2px;opacity:0.85" id="waterPct">100%</div>
+      </div>
+      <div class="box" id="lives">VIDAS<br>❤❤❤</div>
+      <div class="box">NIVEL<br><span id="levelVal">1</span></div>
+    </div>
+
+    <div id="goalBox">🎯 Meta: 500 L</div>
+    <div id="pipeCountBox">Tuberías: 0 / 9</div>
+
+    <div id="touchpad">
+      <div id="dpad">
+        <button class="up" data-k="up">▲</button>
+        <button class="left" data-k="left">◀</button>
+        <button class="right" data-k="right">▶</button>
+        <button class="down" data-k="down">▼</button>
+      </div>
+      <button id="hammerBtn" data-k="hit">🔨</button>
+    </div>
+    <div id="controls-hint">◀ ▶ mover &nbsp;|&nbsp; ▲ ▼ piso &nbsp;|&nbsp; ESPACIO martillar &nbsp;|&nbsp; recoge objetos</div>
+
+    <div class="overlay" id="startScreen">
+      <h1>PATO<br><span class="glow-cyan">REPARADOR</span></h1>
+      <p>
+        ¡Las alcantarillas están siendo destruidas!<br>
+        Nivel 1 → 9 tuberías<br>
+        Nivel 2 → 12 tuberías<br>
+        Nivel 3 → 16 tuberías<br>
+        <span class="glow-yellow">Nivel 4 → ¡JEFE COCODRILO GIGANTE!</span><br><br>
+        🟢 Fuga chica · 🟡 Mediana · 🔴 Grande<br>
+        Objetos: 🔧 💧 🧽 🛡️
+      </p>
+      <button class="btn" id="startBtn">▶ EMPEZAR</button>
+    </div>
+
+    <div class="overlay hidden" id="gameOverScreen">
+      <h1 class="glow-magenta">SE INUNDÓ TODO</h1>
+      <p id="finalScoreText">Puntaje final: 0</p>
+      <p id="finalWaterText" class="glow-cyan">Agua ahorrada: 0 L</p>
+      <button class="btn" id="restartBtn">↻ REINTENTAR</button>
+    </div>
+
+    <div class="overlay hidden" id="levelUpScreen">
+      <h1 class="glow-cyan" id="levelUpText">¡NIVEL 2!</h1>
+      <p id="levelUpSubtext">Más tuberías... más peligro</p>
+      <p id="levelRating" class="glow-yellow" style="font-size:17px;margin-top:8px;"></p>
+    </div>
+
+    <div class="overlay hidden" id="bossIntro">
+      <h1 style="color:#ff3030; text-shadow:0 0 18px #ff0000, 0 0 40px #ff0000;">¡¡JEFE GIGANTE!!</h1>
+      <p class="glow-yellow">El cocodrilo más grande de las alcantarillas ha aparecido</p>
+    </div>
+  </div>
+  <footer id="credit">Juego original expandido · Cocodrilos rediseñados · 100% sintetizado</footer>
+</div>
+
+<script>
+(() => {
+"use strict";
+
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const W = canvas.width;
+const H = canvas.height;
+
+/* ===================== AUDIO ===================== */
+let actx = null, musicTimer = null, musicStep = 0, musicOn = false, masterGain = null;
+
+function initAudio() {
+  if (actx) return;
+  actx = new (window.AudioContext || window.webkitAudioContext)();
+  masterGain = actx.createGain();
+  masterGain.gain.value = 0.33;
+  masterGain.connect(actx.destination);
+}
+
+function tone(freq, dur, type = 'square', vol = 0.22, when = 0, glideTo = null) {
+  if (!actx) return;
+  const t0 = actx.currentTime + when;
+  const osc = actx.createOscillator();
+  const g = actx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, t0);
+  if (glideTo) osc.frequency.linearRampToValueAtTime(glideTo, t0 + dur);
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.linearRampToValueAtTime(vol, t0 + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  osc.connect(g); g.connect(masterGain);
+  osc.start(t0); osc.stop(t0 + dur + 0.02);
+}
+
+let noiseBuffer = null;
+function getNoiseBuffer() {
+  if (noiseBuffer) return noiseBuffer;
+  const len = actx.sampleRate * 1.0;
+  const buf = actx.createBuffer(1, len, actx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+  noiseBuffer = buf;
+  return buf;
+}
+
+function noiseBurst(dur, vol = 0.3, when = 0, filterFreqStart = 4000, filterFreqEnd = 200) {
+  if (!actx) return;
+  const t0 = actx.currentTime + when;
+  const src = actx.createBufferSource();
+  src.buffer = getNoiseBuffer();
+  const filt = actx.createBiquadFilter();
+  filt.type = 'lowpass';
+  filt.frequency.setValueAtTime(filterFreqStart, t0);
+  filt.frequency.exponentialRampToValueAtTime(Math.max(filterFreqEnd, 40), t0 + dur);
+  const g = actx.createGain();
+  g.gain.setValueAtTime(vol, t0);
+  g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+  src.connect(filt); filt.connect(g); g.connect(masterGain);
+  src.start(t0); src.stop(t0 + dur + 0.02);
+}
+
+function sfxHammer() { tone(180, 0.05, 'square', 0.3); noiseBurst(0.08, 0.35, 0, 5000, 300); }
+function sfxCrackTick() { tone(700, 0.04, 'square', 0.12); }
+function sfxPipeBreak() { noiseBurst(0.4, 0.4, 0, 3500, 80); tone(150, 0.35, 'sawtooth', 0.18, 0, 60); }
+function sfxCatchCroc() { tone(523.25, 0.09, 'square', 0.25, 0); tone(659.25, 0.09, 'square', 0.25, 0.09); tone(783.99, 0.14, 'square', 0.28, 0.18); }
+function sfxLoseLife() { tone(300, 0.15, 'sawtooth', 0.25, 0, 180); tone(180, 0.25, 'sawtooth', 0.22, 0.14, 90); }
+function sfxLevelUp() { [0,1,2,3,4].forEach((n,i) => tone(392 * Math.pow(2, n/12), 0.1, 'square', 0.24, i * 0.08)); }
+function sfxGameOver() { [392,349,294,261,196].forEach((f,i) => tone(f, 0.35, 'triangle', 0.22, i * 0.22)); }
+function sfxPickup() { tone(880, 0.08, 'square', 0.2); tone(1174, 0.12, 'square', 0.22, 0.07); }
+function sfxFastRepair() { tone(659, 0.07, 'square', 0.22); tone(880, 0.1, 'square', 0.25, 0.06); }
+function sfxStep() { tone(140, 0.04, 'triangle', 0.08); }
+function sfxBossAppear() {
+  tone(110, 0.45, 'sawtooth', 0.32, 0, 70);
+  tone(82, 0.55, 'sawtooth', 0.28, 0.18, 55);
+  noiseBurst(0.7, 0.42, 0.12, 2200, 90);
+}
+function sfxBossHit() { tone(85, 0.16, 'sawtooth', 0.38); noiseBurst(0.14, 0.42, 0, 3200, 180); }
+function sfxBossDefeat() {
+  [523, 659, 784, 1046, 1318].forEach((f, i) => tone(f, 0.16, 'square', 0.26, i * 0.11));
+  setTimeout(() => noiseBurst(0.55, 0.38, 0, 4500, 120), 450);
+}
+
+/* ===================== MÚSICA ===================== */
+const THEMES = [
+  {
+    name: "Planta Central", bgTop: '#150733', bgMid: '#1c0a3f', bgBottom: '#05020f',
+    building: '120,80,220', pipeA: '#5c6577', pipeB: '#c3ccd8', pipeC: '#454d5c', accent: '#3df2ff',
+    bass: [130.8,130.8,164.8,130.8, 146.8,146.8,174.6,146.8, 130.8,130.8,164.8,130.8, 110,110,130.8,146.8],
+    lead: [523,0,587,659, 0,587,523,0, 494,0,523,587, 0,523,494,0, 523,0,587,659, 0,698,659,587, 523,494,440,494, 523,0,0,0],
+    arp: [0,659,0,784, 0,659,0,880, 0,659,0,784, 0,659,0,0],
+    waveLead: 'square', waveBass: 'triangle', waveArp: 'triangle'
+  },
+  {
+    name: "Alcantarilla Tóxica", bgTop: '#052414', bgMid: '#0a3320', bgBottom: '#01100a',
+    building: '60,200,120', pipeA: '#3d5c46', pipeB: '#8fd9a8', pipeC: '#22331f', accent: '#7dffb0',
+    bass: [146.8,146.8,174.6,146.8, 196,196,220,196, 146.8,146.8,174.6,146.8, 130.8,130.8,146.8,174.6],
+    lead: [587,0,659,698, 0,659,587,0, 554,0,587,659, 0,587,554,0, 587,0,659,698, 0,740,698,659, 587,554,494,554, 587,0,0,0],
+    arp: [0,740,0,880, 0,740,0,988, 0,740,0,880, 0,740,0,0],
+    waveLead: 'sawtooth', waveBass: 'square', waveArp: 'square'
+  },
+  {
+    name: "Fábrica de Hielo", bgTop: '#0a1a33', bgMid: '#122c4f', bgBottom: '#020914',
+    building: '80,180,255', pipeA: '#5c7c99', pipeB: '#cdeeff', pipeC: '#2c3f52', accent: '#8fdcff',
+    bass: [164.8,164.8,196,164.8, 220,220,246.9,220, 164.8,164.8,196,164.8, 146.8,146.8,164.8,196],
+    lead: [659,0,698,784, 0,698,659,0, 622,0,659,698, 0,659,622,0, 659,0,698,784, 0,880,784,698, 659,622,587,622, 659,0,0,0],
+    arp: [0,880,0,1046, 0,880,0,1174, 0,880,0,1046, 0,880,0,0],
+    waveLead: 'triangle', waveBass: 'triangle', waveArp: 'sine'
+  },
+  {
+    name: "Cueva del Jefe", bgTop: '#2a0810', bgMid: '#4a1018', bgBottom: '#120308',
+    building: '255,60,60', pipeA: '#6a2a2a', pipeB: '#ff8a7a', pipeC: '#3a1515', accent: '#ff4040',
+    bass: [98,98,116.5,98, 130.8,130.8,146.8,130.8, 98,98,116.5,98, 87.3,87.3,98,116.5],
+    lead: [392,0,440,494, 0,440,392,0, 370,0,392,440, 0,392,370,0, 392,0,440,494, 0,523,494,440, 392,370,330,370, 392,0,0,0],
+    arp: [0,494,0,587, 0,494,0,659, 0,494,0,587, 0,494,0,0],
+    waveLead: 'sawtooth', waveBass: 'sawtooth', waveArp: 'square'
+  },
+  {
+    name: "Zona Neón", bgTop: '#1a0533', bgMid: '#2e0a4f', bgBottom: '#0a0114',
+    building: '255,60,220', pipeA: '#5c2a5c', pipeB: '#ff9de8', pipeC: '#33123a', accent: '#ff3dcb',
+    bass: [174.6,174.6,207.6,174.6, 233,233,261.6,233, 174.6,174.6,207.6,174.6, 155.5,155.5,174.6,207.6],
+    lead: [698,0,784,880, 0,784,698,0, 659,0,698,784, 0,698,659,0, 698,0,784,880, 0,987,880,784, 698,659,587,659, 698,0,0,0],
+    arp: [0,880,0,1046, 0,880,0,1174, 0,880,0,1046, 0,880,0,0],
+    waveLead: 'square', waveBass: 'triangle', waveArp: 'triangle'
+  }
+];
+
+function getTheme(level) {
+  if (level === 4) return THEMES[3];
+  return THEMES[(level - 1) % THEMES.length];
+}
+
+function scheduleMusicStep() {
+  if (!musicOn) return;
+  const theme = getTheme(state.level);
+  const i = musicStep % theme.bass.length;
+  const li = musicStep % theme.lead.length;
+  const ai = musicStep % theme.arp.length;
+
+  tone(theme.bass[i], 0.14, theme.waveBass, 0.16);
+  if (theme.lead[li] > 0) tone(theme.lead[li], 0.12, theme.waveLead, 0.14);
+  if (theme.arp[ai] > 0) tone(theme.arp[ai], 0.08, theme.waveArp, 0.085);
+
+  if (musicStep % 4 === 0) noiseBurst(0.05, 0.10, 0, 2500, 900);
+  if (musicStep % 8 === 0) tone(78, 0.08, 'triangle', 0.17);
+  if (musicStep % 8 === 4) noiseBurst(0.06, 0.13, 0, 1800, 400);
+
+  musicStep++;
+  const bpmFactor = Math.max(0.46, 1 - (state.level - 1) * 0.038);
+  musicTimer = setTimeout(scheduleMusicStep, 125 * bpmFactor);
+}
+
+function startMusic() { musicOn = true; musicStep = 0; clearTimeout(musicTimer); scheduleMusicStep(); }
+function stopMusic() { musicOn = false; clearTimeout(musicTimer); }
+
+/* ===================== LAYOUT ===================== */
+function getLayout(level) {
+  if (level === 1) return { floors: 3, slots: 3, isBossLevel: false };
+  if (level === 2) return { floors: 3, slots: 4, isBossLevel: false };
+  if (level === 3) return { floors: 4, slots: 4, isBossLevel: false };
+  if (level === 4) return { floors: 3, slots: 3, isBossLevel: true, bigBoss: true };
+  const extra = Math.floor((level - 4) / 2);
+  return {
+    floors: Math.min(5, 3 + extra),
+    slots: Math.min(5, 3 + Math.floor(extra / 1.5) + 1),
+    isBossLevel: level % 5 === 0,
+    bigBoss: level % 10 === 0
+  };
+}
+
+function buildFloors(numFloors) {
+  const floors = [];
+  const topY = 150;
+  const bottomY = 530;
+  const step = (bottomY - topY) / Math.max(1, numFloors - 1);
+  for (let i = 0; i < numFloors; i++) {
+    const t = i / Math.max(1, numFloors - 1);
+    const scale = 1.15 - t * 0.35;
+    floors.push({ y: bottomY - i * step, scale });
+  }
+  return floors;
+}
+
+function buildOffsets(numSlots) {
+  if (numSlots === 3) return [-300, 0, 300];
+  if (numSlots === 4) return [-340, -110, 110, 340];
+  if (numSlots === 5) return [-380, -190, 0, 190, 380];
+  const offsets = [];
+  const span = 320 + (numSlots - 3) * 40;
+  for (let i = 0; i < numSlots; i++) {
+    offsets.push(-span + (i / (numSlots - 1)) * span * 2);
+  }
+  return offsets;
+}
+
+const CENTER_X = 525;
+
+function slotPos(floorIdx, slotIdx) {
+  const f = state.floors[floorIdx];
+  const offsets = state.offsets;
+  const x = CENTER_X + offsets[slotIdx] * f.scale;
+  return { x, y: f.y, scale: f.scale };
+}
+
+function makeSlots() {
+  const slots = [];
+  const { floors, slots: numSlots } = state.layout;
+  for (let fi = 0; fi < floors; fi++) {
+    for (let si = 0; si < numSlots; si++) {
+      slots.push({
+        floor: fi, slot: si,
+        status: 'ok',
+        crackStart: 0,
+        crackDuration: 1,
+        croc: null,
+        isBoss: false,
+        isBigBoss: false,
+        hp: 1, maxHp: 1,
+        leakType: null,
+        waterLost: 0,
+        waterFill: 1.0
+      });
+    }
+  }
+  return slots;
+}
+
+function findSlot(fi, si) {
+  return state.slots.find(s => s.floor === fi && s.slot === si);
+}
+
+/* ===================== CONSTANTES ===================== */
+const LEAK_TYPES = {
+  small:  { id: 'small',  label: '🟢', color: '#7dffb0', lossPerSec: 7,  maxLoss: 85 },
+  medium: { id: 'medium', label: '🟡', color: '#ffe23d', lossPerSec: 16, maxLoss: 150 },
+  large:  { id: 'large',  label: '🔴', color: '#ff3d3d', lossPerSec: 28, maxLoss: 240 }
+};
+
+const ITEM_TYPES = [
+  { id: 'key',    emoji: '🔧', color: '#c0c0c0' },
+  { id: 'drop',   emoji: '💧', color: '#ffe23d' },
+  { id: 'sponge', emoji: '🧽', color: '#ff9d6a' },
+  { id: 'shield', emoji: '🛡️', color: '#3df2ff' }
+];
+
+/* ===================== ESTADO ===================== */
+const state = {
+  running: false,
+  score: 0,
+  lives: 3,
+  level: 1,
+  repairsThisLevel: 0,
+  repairsNeeded: 9,
+  layout: null,
+  floors: [],
+  offsets: [],
+  slots: [],
+  duck: {
+    floor: 1, slot: 1,
+    x: 0, y: 0, targetX: 0, targetY: 0, scale: 1,
+    hammering: false, hammerT: 0, hitApplied: false,
+    facing: 1, bob: 0, walkPhase: 0, moving: false, hop: 0
+  },
+  particles: [],
+  floatTexts: [],
+  items: [],
+  spawnTimer: 0,
+  itemSpawnTimer: 0,
+  shake: 0,
+  lastTime: 0,
+  bossSpawnedThisLevel: false,
+  waterSaved: 0,
+  waterLevel: 100,
+  floodLevel: 0,
+  levelWaterSaved: 0,
+  levelTarget: 500,
+  hasShield: false,
+  doubleNext: false,
+  bossMode: false
+};
+
+function getLevelTarget(lvl) {
+  return 380 + (lvl - 1) * 110 + Math.floor(lvl / 4) * 90;
+}
+
+function applyLayout(level) {
+  state.layout = getLayout(level);
+  state.floors = buildFloors(state.layout.floors);
+  state.offsets = buildOffsets(state.layout.slots);
+  state.slots = makeSlots();
+  state.repairsNeeded = state.layout.floors * state.layout.slots;
+  state.duck.floor = Math.min(state.duck.floor, state.layout.floors - 1);
+  state.duck.slot = Math.min(state.duck.slot, state.layout.slots - 1);
+  if (state.duck.floor < 0) state.duck.floor = 0;
+  if (state.duck.slot < 0) state.duck.slot = Math.floor(state.layout.slots / 2);
+}
+
+function resetDuckPos(instant) {
+  const p = slotPos(state.duck.floor, state.duck.slot);
+  state.duck.targetX = p.x;
+  state.duck.targetY = p.y;
+  state.duck.scale = p.scale;
+  if (instant) {
+    state.duck.x = p.x;
+    state.duck.y = p.y;
+    state.duck.moving = false;
+    state.duck.hop = 0;
+  } else {
+    state.duck.moving = true;
+    state.duck.hop = 1;
+    sfxStep();
+  }
+}
+
+function resetGame() {
+  state.running = true;
+  state.score = 0;
+  state.lives = 3;
+  state.level = 1;
+  state.repairsThisLevel = 0;
+  applyLayout(1);
+  state.duck.floor = 1;
+  state.duck.slot = 1;
+  resetDuckPos(true);
+  state.particles = [];
+  state.floatTexts = [];
+  state.items = [];
+  state.spawnTimer = 0;
+  state.itemSpawnTimer = 0;
+  state.shake = 0;
+  state.bossSpawnedThisLevel = false;
+  state.waterSaved = 0;
+  state.waterLevel = 100;
+  state.floodLevel = 0;
+  state.levelWaterSaved = 0;
+  state.levelTarget = getLevelTarget(1);
+  state.hasShield = false;
+  state.doubleNext = false;
+  state.bossMode = false;
+  updateHud();
+}
+
+/* ===================== ENTRADA ===================== */
+const keys = {};
+function handleAction(k) {
+  if (!state.running) return;
+  const maxSlot = state.layout.slots - 1;
+  const maxFloor = state.layout.floors - 1;
+
+  if (k === 'left') {
+    state.duck.slot = Math.max(0, state.duck.slot - 1);
+    state.duck.facing = -1;
+    resetDuckPos(false);
+  }
+  if (k === 'right') {
+    state.duck.slot = Math.min(maxSlot, state.duck.slot + 1);
+    state.duck.facing = 1;
+    resetDuckPos(false);
+  }
+  if (k === 'up') {
+    state.duck.floor = Math.min(maxFloor, state.duck.floor + 1);
+    resetDuckPos(false);
+  }
+  if (k === 'down') {
+    state.duck.floor = Math.max(0, state.duck.floor - 1);
+    resetDuckPos(false);
+  }
+  if (k === 'hit') swingHammer();
+  checkItemPickup();
+}
+
+window.addEventListener('keydown', e => {
+  const map = {
+    ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down',
+    a: 'left', d: 'right', w: 'up', s: 'down', ' ': 'hit', Spacebar: 'hit'
+  };
+  const k = map[e.key];
+  if (k && !keys[e.key]) {
+    keys[e.key] = true;
+    e.preventDefault();
+    handleAction(k);
+  }
+});
+window.addEventListener('keyup', e => { keys[e.key] = false; });
+
+document.querySelectorAll('#touchpad button').forEach(btn => {
+  btn.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    handleAction(btn.dataset.k);
+  });
+});
+
+function swingHammer() {
+  if (state.duck.hammering) return;
+  state.duck.hammering = true;
+  state.duck.hammerT = 0;
+  state.duck.hitApplied = false;
+}
+
+/* ===================== SPAWN ===================== */
+function tryDifficultyCurve() {
+  const lvl = state.level;
+  return {
+    crackDuration: Math.max(1200, 4000 - (lvl - 1) * 210),
+    spawnInterval: Math.max(650, 2400 - (lvl - 1) * 140),
+    dualChance: Math.min(0.7, Math.max(0, (lvl - 2) * 0.14)),
+    relocateEnabled: lvl >= 3,
+    relocateThreshold: Math.max(850, 2100 - (lvl - 3) * 110),
+    itemChance: 0.58 + Math.min(0.28, lvl * 0.025)
+  };
+}
+
+function pickLeakType(isBoss) {
+  if (isBoss) return LEAK_TYPES.large;
+  const r = Math.random();
+  const weights = {
+    small: Math.max(0.15, 0.42 - state.level * 0.018),
+    medium: 0.36,
+    large: Math.min(0.5, 0.22 + state.level * 0.022)
+  };
+  const total = weights.small + weights.medium + weights.large;
+  if (r < weights.small / total) return LEAK_TYPES.small;
+  if (r < (weights.small + weights.medium) / total) return LEAK_TYPES.medium;
+  return LEAK_TYPES.large;
+}
+
+function spawnOneCrocodile(diff, forceBoss, isBigBoss = false) {
+  const okSlots = state.slots.filter(s => s.status === 'ok' && !s.croc);
+  if (okSlots.length === 0) return;
+
+  const s = okSlots[Math.floor(Math.random() * okSlots.length)];
+  s.status = 'cracking';
+  s.crackStart = performance.now();
+  s.isBoss = !!forceBoss;
+  s.isBigBoss = !!isBigBoss;
+
+  if (isBigBoss) {
+    s.maxHp = 8 + Math.floor(state.level / 2);
+    s.hp = s.maxHp;
+    s.crackDuration = diff.crackDuration * 2.8;
+  } else if (forceBoss) {
+    s.maxHp = 3 + Math.floor(state.level / 4);
+    s.hp = s.maxHp;
+    s.crackDuration = diff.crackDuration * 1.9;
+  } else {
+    s.maxHp = 1;
+    s.hp = 1;
+    s.crackDuration = diff.crackDuration;
+  }
+
+  s.leakType = pickLeakType(forceBoss || isBigBoss);
+  s.waterLost = 0;
+  s.waterFill = 1.0;
+  s.croc = {
+    phase: 0, fleeing: false, fleeT: 0, bite: 0,
+    moveTimer: 0, bitePulse: 0, enraged: false
+  };
+
+  if (isBigBoss || forceBoss) {
+    state.bossMode = true;
+    sfxBossAppear();
+    const intro = document.getElementById('bossIntro');
+    intro.classList.remove('hidden');
+    setTimeout(() => intro.classList.add('hidden'), 2400);
+  }
+}
+
+function spawnCrocodile() {
+  const diff = tryDifficultyCurve();
+  const activeBoss = state.slots.some(s => (s.isBoss || s.isBigBoss) && s.status === 'cracking');
+
+  if (state.level === 4 && !state.bossSpawnedThisLevel && !activeBoss) {
+    spawnOneCrocodile(diff, true, true);
+    state.bossSpawnedThisLevel = true;
+    return;
+  }
+
+  const wantsBoss = state.layout.isBossLevel && !activeBoss && !state.bossSpawnedThisLevel;
+  spawnOneCrocodile(diff, wantsBoss, state.layout.bigBoss && wantsBoss);
+  if (wantsBoss) state.bossSpawnedThisLevel = true;
+
+  if (!wantsBoss && Math.random() < diff.dualChance) {
+    spawnOneCrocodile(diff, false, false);
+  }
+}
+
+function spawnItem() {
+  const free = state.slots.filter(s =>
+    s.status === 'ok' && !state.items.some(it => it.floor === s.floor && it.slot === s.slot)
+  );
+  if (free.length === 0) return;
+  const s = free[Math.floor(Math.random() * free.length)];
+  const type = ITEM_TYPES[Math.floor(Math.random() * ITEM_TYPES.length)];
+  state.items.push({
+    floor: s.floor, slot: s.slot, type,
+    life: 9500 + Math.random() * 3000, age: 0, bob: 0
+  });
+}
+
+function checkItemPickup() {
+  const d = state.duck;
+  const idx = state.items.findIndex(it => it.floor === d.floor && it.slot === d.slot);
+  if (idx === -1) return;
+  const it = state.items[idx];
+  state.items.splice(idx, 1);
+  sfxPickup();
+  applyItem(it.type, slotPos(d.floor, d.slot));
+}
+
+function applyItem(type, p) {
+  if (type.id === 'key') {
+    let best = null, bestScore = -1;
+    state.slots.forEach(s => {
+      if (s.status !== 'cracking') return;
+      const prog = (performance.now() - s.crackStart) / s.crackDuration;
+      const score = prog * 2 + (s.leakType?.lossPerSec || 0) / 10 + (s.isBoss || s.isBigBoss ? 6 : 0);
+      if (score > bestScore) { bestScore = score; best = s; }
+    });
+    if (best) {
+      const saved = Math.max(0, (best.leakType?.maxLoss || 100) - best.waterLost);
+      addWaterSaved(Math.round(saved * 0.85), p, true);
+      best.status = 'ok';
+      best.crackStart = 0;
+      best.waterFill = 1;
+      if (best.croc) { best.croc.fleeing = true; best.croc.fleeT = 0; }
+      best.isBoss = false;
+      best.isBigBoss = false;
+      state.repairsThisLevel++;
+      spawnFloatText(p.x, p.y - 80 * p.scale, '🔧 ¡REPARADO!', '#c0c0c0');
+    } else {
+      spawnFloatText(p.x, p.y - 60 * p.scale, '🔧 sin fugas', '#c0c0c0');
+    }
+  } else if (type.id === 'drop') {
+    state.doubleNext = true;
+    spawnFloatText(p.x, p.y - 60 * p.scale, '💧 ×2 próximo', '#ffe23d');
+  } else if (type.id === 'sponge') {
+    state.floodLevel = Math.max(0, state.floodLevel - 0.38);
+    state.waterLevel = Math.min(100, state.waterLevel + 9);
+    spawnFloatText(p.x, p.y - 60 * p.scale, '🧽 -inundación', '#ff9d6a');
+  } else if (type.id === 'shield') {
+    state.hasShield = true;
+    spawnFloatText(p.x, p.y - 60 * p.scale, '🛡️ ESCUDO', '#3df2ff');
+  }
+  updateHud();
+}
+
+function addWaterSaved(liters, p, isFast) {
+  let final = liters;
+  if (state.doubleNext) {
+    final *= 2;
+    state.doubleNext = false;
+    spawnFloatText(p.x, p.y - 95 * p.scale, '×2!', '#ffe23d');
+  }
+  state.waterSaved += final;
+  state.levelWaterSaved += final;
+  if (isFast) {
+    sfxFastRepair();
+    spawnFloatText(p.x, p.y - 75 * p.scale, '⚡ RÁPIDO +' + final + ' L', '#3df2ff');
+  } else {
+    spawnFloatText(p.x, p.y - 55 * p.scale, '+' + final + ' L', '#3df2ff');
+  }
+}
+
+function breakPipe(s) {
+  if (state.hasShield) {
+    state.hasShield = false;
+    s.status = 'ok';
+    s.crackStart = 0;
+    s.waterFill = 1;
+    if (s.croc) { s.croc.fleeing = true; s.croc.fleeT = 0; }
+    s.isBoss = false;
+    s.isBigBoss = false;
+    const p = slotPos(s.floor, s.slot);
+    spawnFloatText(p.x, p.y - 70 * p.scale, '🛡️ ¡BLOQUEADO!', '#3df2ff');
+    sfxCatchCroc();
+    updateHud();
+    return;
+  }
+  s.status = 'broken';
+  s.isBoss = false;
+  s.isBigBoss = false;
+  s.waterFill = 0;
+  state.lives -= 1;
+  state.shake = 16;
+  sfxPipeBreak();
+  spawnSplashParticles(s);
+  const extraLoss = (s.leakType?.maxLoss || 100) * 0.42;
+  state.waterLevel = Math.max(0, state.waterLevel - extraLoss * 0.16);
+  state.floodLevel = Math.min(1, state.floodLevel + 0.2 + (s.leakType?.id === 'large' ? 0.14 : 0));
+  if (s.croc) { s.croc.fleeing = true; s.croc.fleeT = 0; }
+  if (state.lives <= 0) endGame();
+  else sfxLoseLife();
+  updateHud();
+}
+
+function spawnSplashParticles(s) {
+  const p = slotPos(s.floor, s.slot);
+  for (let i = 0; i < 24; i++) {
+    state.particles.push({
+      x: p.x + (Math.random() - 0.5) * 32,
+      y: p.y - 12 * p.scale,
+      vx: (Math.random() - 0.5) * 220,
+      vy: -Math.random() * 280 - 50,
+      life: 1.05 + Math.random() * 0.55,
+      age: 0,
+      color: '#6fd8ff',
+      size: 3 + Math.random() * 4,
+      grav: 540
+    });
+  }
+}
+
+function spawnHitParticles(x, y, color) {
+  for (let i = 0; i < 14; i++) {
+    state.particles.push({
+      x, y,
+      vx: (Math.random() - 0.5) * 260,
+      vy: -Math.random() * 210 - 40,
+      life: 0.55 + Math.random() * 0.35,
+      age: 0,
+      color,
+      size: 2.2 + Math.random() * 3,
+      grav: 430
+    });
+  }
+}
+
+function spawnFloatText(x, y, text, color) {
+  state.floatTexts.push({ x, y, text, color, age: 0, life: 1.25 });
+}
+
+function attemptRepair() {
+  const s = findSlot(state.duck.floor, state.duck.slot);
+  if (!s || s.status === 'ok') return;
+
+  sfxHammer();
+  const p = slotPos(s.floor, s.slot);
+  const now = performance.now();
+  const elapsed = now - s.crackStart;
+  const isFast = elapsed < 2800;
+
+  if (s.isBoss || s.isBigBoss) {
+    s.hp -= 1;
+    state.shake = Math.max(state.shake, 14);
+    sfxBossHit();
+
+    if (s.hp <= Math.ceil(s.maxHp / 2) && s.croc && !s.croc.enraged) {
+      s.croc.enraged = true;
+      s.crackDuration *= 0.65;
+      spawnFloatText(p.x, p.y - 95 * p.scale, '¡SE ENFURECIÓ!', '#ff3030');
+    }
+
+    if (s.hp > 0) {
+      state.score += 30 + state.level * 5;
+      spawnFloatText(p.x, p.y - 62 * p.scale, '-1  (' + s.hp + '/' + s.maxHp + ')', '#ff9d00');
+      spawnHitParticles(p.x, p.y - 32 * p.scale, '#ff5a30');
+      s.crackStart = performance.now();
+      updateHud();
+      return;
+    } else {
+      const bonus = s.isBigBoss ? 400 + state.level * 40 : 220 + state.level * 28;
+      state.score += bonus;
+      sfxBossDefeat();
+      spawnFloatText(p.x, p.y - 85 * p.scale, '🏆 +' + bonus + ' ¡JEFE VENCIDO!', '#ffe23d');
+      for (let i = 0; i < 28; i++) {
+        spawnHitParticles(p.x + (Math.random() - 0.5) * 80, p.y - 55 * p.scale, '#ff3d3d');
+      }
+      if (s.croc) { s.croc.fleeing = true; s.croc.fleeT = 0; }
+      s.isBoss = false;
+      s.isBigBoss = false;
+      state.bossMode = false;
+      const saved = Math.max(0, (s.leakType?.maxLoss || 220) - s.waterLost) + (s.isBigBoss ? 220 : 140);
+      addWaterSaved(Math.round(saved), p, isFast);
+    }
+  } else if (s.status === 'cracking' && s.croc && !s.croc.fleeing) {
+    const bonus = 55 + state.level * 7;
+    state.score += bonus;
+    sfxCatchCroc();
+    spawnFloatText(p.x, p.y - 60 * p.scale, '+' + bonus + ' ¡ATRAPADO!', '#ffe23d');
+    spawnHitParticles(p.x, p.y - 40 * p.scale, '#ffe23d');
+    s.croc.fleeing = true;
+    s.croc.fleeT = 0;
+    let saved = Math.max(0, (s.leakType?.maxLoss || 100) - s.waterLost);
+    if (isFast) saved += 45;
+    addWaterSaved(Math.round(saved), p, isFast);
+  } else {
+    state.score += 18 + state.level * 3;
+    spawnFloatText(p.x, p.y - 58 * p.scale, '+' + (18 + state.level * 3), '#3df2ff');
+    spawnHitParticles(p.x, p.y - 28 * p.scale, '#8a95a5');
+    addWaterSaved(Math.round(28 + state.level * 2), p, false);
+  }
+
+  s.status = 'ok';
+  s.crackStart = 0;
+  s.leakType = null;
+  s.waterLost = 0;
+  s.waterFill = 1.0;
+  state.repairsThisLevel++;
+  state.shake = Math.max(state.shake, 6);
+  updateHud();
+
+  if (state.repairsThisLevel >= state.repairsNeeded) {
+    state.repairsThisLevel = 0;
+    state.level++;
+    state.bossSpawnedThisLevel = false;
+    showLevelUp();
+  }
+}
+
+function showLevelUp() {
+  sfxLevelUp();
+  applyLayout(state.level);
+  resetDuckPos(true);
+
+  const el = document.getElementById('levelUpScreen');
+  const theme = getTheme(state.level);
+  document.getElementById('levelUpText').textContent = '¡NIVEL ' + state.level + '!';
+
+  let sub = theme.name;
+  if (state.level === 4) sub = '¡¡CUIDADO!! Aparece el JEFE GIGANTE';
+  else if (state.layout.isBossLevel) sub += ' — ¡Hay jefe!';
+  else sub += ' · Tuberías: ' + state.repairsNeeded;
+  document.getElementById('levelUpSubtext').textContent = sub;
+
+  const saved = state.levelWaterSaved;
+  const target = state.levelTarget;
+  let rating = '';
+  if (saved >= target * 1.55) rating = '🏆 Maestro del agua (' + Math.round(saved) + ' L)';
+  else if (saved >= target * 1.15) rating = '⭐ Gran ahorrador (' + Math.round(saved) + ' L)';
+  else if (saved >= target) rating = '👍 Buen trabajo (' + Math.round(saved) + ' L)';
+  else rating = '😟 Hay que reparar más rápido (' + Math.round(saved) + ' L)';
+  document.getElementById('levelRating').textContent = rating;
+
+  state.levelWaterSaved = 0;
+  state.levelTarget = getLevelTarget(state.level);
+  state.waterLevel = Math.min(100, state.waterLevel + 14);
+  state.floodLevel = Math.max(0, state.floodLevel - 0.28);
+
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 2400);
+  updateHud();
+}
+
+function endGame() {
+  state.running = false;
+  stopMusic();
+  sfxGameOver();
+  document.getElementById('finalScoreText').textContent = 'Puntaje final: ' + state.score;
+  document.getElementById('finalWaterText').textContent = 'Agua ahorrada: ' + Math.round(state.waterSaved) + ' L';
+  document.getElementById('gameOverScreen').classList.remove('hidden');
+}
+
+function updateHud() {
+  document.getElementById('scoreVal').textContent = state.score;
+  document.getElementById('levelVal').textContent = state.level;
+  document.getElementById('waterSavedVal').textContent = Math.round(state.waterSaved) + ' L';
+  const pct = Math.max(0, Math.min(100, state.waterLevel));
+  document.getElementById('waterBarInner').style.width = pct + '%';
+  document.getElementById('waterPct').textContent = Math.round(pct) + '%';
+  const bar = document.getElementById('waterBarInner');
+  if (pct > 60) bar.style.background = 'linear-gradient(90deg,#3df2ff,#00a8ff)';
+  else if (pct > 30) bar.style.background = 'linear-gradient(90deg,#ffe23d,#ff9d00)';
+  else bar.style.background = 'linear-gradient(90deg,#ff3d3d,#c02020)';
+
+  document.getElementById('goalBox').textContent =
+    '🎯 Meta: ' + state.levelTarget + ' L · Ahorrados: ' + Math.round(state.levelWaterSaved) + ' L';
+
+  document.getElementById('pipeCountBox').textContent =
+    'Tuberías: ' + state.repairsThisLevel + ' / ' + state.repairsNeeded;
+
+  const livesBox = document.getElementById('lives');
+  let hearts = '';
+  for (let i = 0; i < state.lives; i++) hearts += '❤';
+  livesBox.innerHTML = 'VIDAS<br>' + (hearts || '—') + (state.hasShield ? ' 🛡️' : '');
+}
+
+/* ===================== UPDATE ===================== */
+function update(dt, now) {
+  if (!state.running) return;
+
+  const diff = tryDifficultyCurve();
+  state.spawnTimer += dt;
+  if (state.spawnTimer > diff.spawnInterval) {
+    state.spawnTimer = 0;
+    spawnCrocodile();
+  }
+
+  state.itemSpawnTimer += dt;
+  if (state.itemSpawnTimer > 2600 + Math.random() * 1600) {
+    state.itemSpawnTimer = 0;
+    if (Math.random() < diff.itemChance) spawnItem();
+  }
+
+  for (const s of state.slots) {
+    if (s.status === 'cracking') {
+      const prog = (now - s.crackStart) / s.crackDuration;
+      if (Math.floor(prog * 6) !== Math.floor((prog - dt / s.crackDuration) * 6) && prog < 1) {
+        sfxCrackTick();
+      }
+
+      if (s.leakType) {
+        const baseLoss = s.leakType.lossPerSec * (dt / 1000);
+        const biteMul = (s.croc && !s.croc.fleeing) ? (1 + s.croc.bite * 1.85) : 1;
+        const enrageMul = (s.croc && s.croc.enraged) ? 1.7 : 1;
+        const loss = baseLoss * biteMul * enrageMul;
+        s.waterLost += loss;
+        s.waterFill = Math.max(0, 1 - (s.waterLost / s.leakType.maxLoss));
+        state.waterLevel = Math.max(0, state.waterLevel - loss * 0.075);
+
+        const dripChance = 0.11 + (s.leakType.id === 'large' ? 0.2 : 0) + (s.croc?.bite || 0) * 0.14;
+        if (Math.random() < dripChance) {
+          const p = slotPos(s.floor, s.slot);
+          state.particles.push({
+            x: p.x + (Math.random() - 0.5) * 16,
+            y: p.y - 48 * p.scale + (1 - s.waterFill) * 38 * p.scale,
+            vx: (Math.random() - 0.5) * 28,
+            vy: 38 + Math.random() * 48,
+            life: 0.52, age: 0, color: '#6fd8ff', size: 2 + Math.random() * 2.4, grav: 290
+          });
+        }
+      }
+
+      if (prog >= 1) breakPipe(s);
+
+      if (s.croc && !s.croc.fleeing) {
+        const speed = s.croc.enraged ? 0.0095 : 0.0062;
+        s.croc.phase += dt * speed;
+        s.croc.bite = (Math.sin(s.croc.phase * 6) + 1) / 2;
+        s.croc.bitePulse = Math.max(0, s.croc.bitePulse - dt * 0.004);
+        if (s.croc.bite > 0.92 && s.croc.bitePulse <= 0) {
+          s.croc.bitePulse = 1;
+          s.waterFill = Math.max(0, s.waterFill - 0.048);
+          s.waterLost += (s.leakType?.maxLoss || 100) * 0.048;
+        }
+
+        if (diff.relocateEnabled && !s.isBoss && !s.isBigBoss) {
+          s.croc.moveTimer += dt;
+          if (s.croc.moveTimer > diff.relocateThreshold) {
+            const targets = state.slots.filter(t => t !== s && t.status === 'ok' && !t.croc);
+            if (targets.length) {
+              const t = targets[Math.floor(Math.random() * targets.length)];
+              t.status = 'cracking';
+              t.crackStart = performance.now();
+              t.crackDuration = s.crackDuration;
+              t.leakType = s.leakType;
+              t.waterLost = s.waterLost * 0.28;
+              t.waterFill = s.waterFill;
+              t.croc = { phase: 0, fleeing: false, fleeT: 0, bite: 0, moveTimer: 0, bitePulse: 0, enraged: false };
+              const tp = slotPos(t.floor, t.slot);
+              spawnFloatText(tp.x, tp.y - 70 * tp.scale, '¡SE ESCAPÓ!', '#ff8c3d');
+              s.status = 'ok'; s.crackStart = 0; s.croc = null; s.leakType = null; s.waterFill = 1;
+            } else s.croc.moveTimer = 0;
+          }
+        }
+      }
+    }
+    if (s.croc && s.croc.fleeing) {
+      s.croc.fleeT += dt;
+      if (s.croc.fleeT > 520) s.croc = null;
+    }
+  }
+
+  state.items.forEach(it => { it.age += dt; it.bob += dt * 0.008; });
+  state.items = state.items.filter(it => it.age < it.life);
+
+  const d = state.duck;
+  const dx = d.targetX - d.x;
+  const dy = d.targetY - d.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+
+  if (dist > 1.4) {
+    d.moving = true;
+    d.x += dx * Math.min(1, dt * 0.015);
+    d.y += dy * Math.min(1, dt * 0.015);
+    d.walkPhase += dt * 0.019;
+  } else {
+    d.x = d.targetX;
+    d.y = d.targetY;
+    d.moving = false;
+    d.walkPhase *= 0.88;
+  }
+  if (d.hop > 0) d.hop = Math.max(0, d.hop - dt * 0.0062);
+  d.bob += dt * 0.006;
+
+  if (d.hammering) {
+    d.hammerT += dt;
+    if (!d.hitApplied && d.hammerT > 105) {
+      d.hitApplied = true;
+      attemptRepair();
+    }
+    if (d.hammerT > 250) d.hammering = false;
+  }
+
+  state.particles.forEach(p => {
+    p.age += dt / 1000;
+    p.vy += p.grav * dt / 1000;
+    p.x += p.vx * dt / 1000;
+    p.y += p.vy * dt / 1000;
+  });
+  state.particles = state.particles.filter(p => p.age < p.life);
+
+  state.floatTexts.forEach(t => { t.age += dt / 1000; t.y -= dt * 0.036; });
+  state.floatTexts = state.floatTexts.filter(t => t.age < t.life);
+
+  if (state.shake > 0) state.shake = Math.max(0, state.shake - dt * 0.032);
+
+  const brokenCount = state.slots.filter(s => s.status === 'broken').length;
+  if (brokenCount > 0) {
+    state.floodLevel = Math.min(1, state.floodLevel + brokenCount * 0.000038 * dt);
+    state.waterLevel = Math.max(0, state.waterLevel - brokenCount * 0.0038 * dt);
+  } else {
+    state.floodLevel = Math.max(0, state.floodLevel - 0.000022 * dt);
+  }
+
+  if (state.waterLevel <= 0 && state.running) {
+    state.lives = 0;
+    endGame();
+  }
+  updateHud();
+}
+
+/* ===================== DIBUJO ===================== */
+function drawBackground() {
+  const theme = getTheme(state.level);
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, theme.bgTop);
+  g.addColorStop(0.5, theme.bgMid);
+  g.addColorStop(1, theme.bgBottom);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.save();
+  for (let i = 0; i < 6; i++) {
+    const y = 70 + i * 95;
+    const thickness = 24 + (i % 2) * 7;
+    ctx.fillStyle = `rgba(${theme.building},0.20)`;
+    ctx.fillRect(0, y, W, thickness);
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(0, y + 2, W, 3);
+    for (let x = 50; x < W; x += 130) {
+      ctx.fillStyle = `rgba(${theme.building},0.32)`;
+      ctx.fillRect(x - 7, y - 5, 14, thickness + 10);
+    }
+  }
+  for (let i = 0; i < 8; i++) {
+    const x = 60 + i * 130;
+    ctx.fillStyle = `rgba(${theme.building},0.16)`;
+    ctx.fillRect(x, 0, 18, H);
+  }
+  ctx.restore();
+}
+
+function drawFlood() {
+  if (state.floodLevel <= 0.01) return;
+  const h = state.floodLevel * 115;
+  const g = ctx.createLinearGradient(0, H - h, 0, H);
+  g.addColorStop(0, 'rgba(40,140,220,0.14)');
+  g.addColorStop(0.6, 'rgba(30,120,200,0.42)');
+  g.addColorStop(1, 'rgba(20,90,160,0.68)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, H - h, W, h);
+
+  ctx.strokeStyle = 'rgba(150,220,255,0.32)';
+  ctx.lineWidth = 2;
+  const t = performance.now() / 380;
+  ctx.beginPath();
+  for (let x = 0; x <= W; x += 7) {
+    const y = H - h + Math.sin(x * 0.028 + t) * 4 + Math.sin(x * 0.01 + t * 1.25) * 3;
+    if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
+
+function drawFloor(fi) {
+  const f = state.floors[fi];
+  const halfW = 320 * f.scale + (state.layout.slots - 3) * 25 * f.scale;
+  const depth = 42 * f.scale;
+  const grad = ctx.createLinearGradient(0, f.y - depth, 0, f.y + 16);
+  grad.addColorStop(0, '#2b1a52');
+  grad.addColorStop(1, '#150a2c');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.moveTo(CENTER_X - halfW, f.y + 16);
+  ctx.lineTo(CENTER_X + halfW, f.y + 16);
+  ctx.lineTo(CENTER_X + halfW * 0.93, f.y - depth);
+  ctx.lineTo(CENTER_X - halfW * 0.93, f.y - depth);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(61,242,255,0.22)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function drawPipe(s) {
+  const theme = getTheme(state.level);
+  const p = slotPos(s.floor, s.slot);
+  const bossMul = s.isBigBoss ? 1.7 : (s.isBoss ? 1.4 : 1);
+  const w = 44 * p.scale * bossMul;
+  const h = 92 * p.scale * bossMul;
+  const x = p.x - w / 2;
+  const y = p.y - h;
+
+  ctx.save();
+  if (s.status === 'cracking') ctx.translate((Math.random() - 0.5) * 1.4, 0);
+
+  const grad = ctx.createLinearGradient(x, 0, x + w, 0);
+  if (s.status === 'broken') {
+    grad.addColorStop(0, '#7a3d2a'); grad.addColorStop(0.5, '#a85c3f'); grad.addColorStop(1, '#5c2a1c');
+  } else {
+    grad.addColorStop(0, theme.pipeA); grad.addColorStop(0.5, theme.pipeB); grad.addColorStop(1, theme.pipeC);
+  }
+  ctx.fillStyle = grad;
+  roundRect(x, y, w, h, 7 * p.scale);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  if (s.status !== 'broken' && s.waterFill > 0.01) {
+    const waterH = h * 0.76 * s.waterFill;
+    const waterY = y + h - 7 * p.scale - waterH;
+    const wg = ctx.createLinearGradient(0, waterY, 0, waterY + waterH);
+    wg.addColorStop(0, 'rgba(80,200,255,0.52)');
+    wg.addColorStop(1, 'rgba(30,140,220,0.72)');
+    ctx.fillStyle = wg;
+    ctx.save();
+    roundRect(x + 3, y + 3, w - 6, h - 6, 5 * p.scale);
+    ctx.clip();
+    ctx.fillRect(x + 3, waterY, w - 6, waterH + 8);
+    ctx.fillStyle = 'rgba(180,240,255,0.32)';
+    ctx.fillRect(x + 3, waterY, w - 6, 4 * p.scale);
+    ctx.restore();
+  }
+
+  if (s.status === 'cracking' && s.leakType) {
+    ctx.font = (10 * p.scale) + "px 'Press Start 2P'";
+    ctx.textAlign = 'center';
+    ctx.fillStyle = s.leakType.color;
+    ctx.fillText(s.leakType.label, x + w / 2, y - 16 * p.scale);
+  }
+
+  if (s.isBoss || s.isBigBoss) {
+    const pulse = 0.5 + Math.sin(performance.now() / 140) * 0.35;
+    ctx.strokeStyle = `rgba(255,40,40,${0.45 + pulse * 0.4})`;
+    ctx.lineWidth = s.isBigBoss ? 5 : 3.5;
+    ctx.setLineDash([7, 5]);
+    roundRect(x - 5, y - 5, w + 10, h + 10, 10 * p.scale);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const hpW = w + 18;
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(x - 9, y - 34 * p.scale, hpW, 11 * p.scale);
+    ctx.fillStyle = s.croc && s.croc.enraged ? '#ff2020' : '#ff3d3d';
+    ctx.fillRect(x - 9, y - 34 * p.scale, hpW * (s.hp / s.maxHp), 11 * p.scale);
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(x - 9, y - 34 * p.scale, hpW, 11 * p.scale);
+
+    ctx.font = (s.isBigBoss ? 11 : 10) + "px 'Press Start 2P'";
+    ctx.fillStyle = s.croc && s.croc.enraged ? '#ff6b6b' : '#ff9d00';
+    ctx.textAlign = 'center';
+    ctx.fillText(s.isBigBoss ? 'JEFE GIGANTE' : (s.croc && s.croc.enraged ? '¡FURIOSO!' : 'JEFE'), x + w / 2, y - 40 * p.scale);
+  }
+
+  if (s.status === 'cracking') {
+    const prog = Math.min(1, (performance.now() - s.crackStart) / s.crackDuration);
+    ctx.strokeStyle = `rgba(20,10,5,${0.5 + prog * 0.5})`;
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(x + w * 0.5, y + 4);
+    ctx.lineTo(x + w * 0.28, y + h * 0.34);
+    ctx.lineTo(x + w * 0.68, y + h * 0.54);
+    ctx.lineTo(x + w * 0.32, y + h * 0.84);
+    ctx.stroke();
+
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fillRect(x, y - 13 * p.scale, w, 5 * p.scale);
+    ctx.fillStyle = prog < 0.6 ? '#ffe23d' : '#ff3d3d';
+    ctx.fillRect(x, y - 13 * p.scale, w * (1 - prog), 5 * p.scale);
+  }
+
+  if (s.status === 'broken') {
+    const t = performance.now() / 115;
+    for (let i = 0; i < 4; i++) {
+      const sx = x + w * 0.5 + Math.sin(t + i) * 11;
+      ctx.strokeStyle = 'rgba(111,216,255,0.62)';
+      ctx.lineWidth = 3 + (s.leakType?.id === 'large' ? 1.8 : 0);
+      ctx.beginPath();
+      ctx.moveTo(sx, y + h * 0.22);
+      ctx.quadraticCurveTo(sx + 26, y + h * 0.04, sx + 38, y - 18 + Math.sin(t * 2 + i) * 7);
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+/* ============================================================
+   COCODRILO MEJORADO - Diseño detallado
+   ============================================================ */
+function drawCrocodile(s) {
+  if (!s.croc) return;
+
+  const p = slotPos(s.floor, s.slot);
+  const isBig = s.isBigBoss;
+  const isBoss = s.isBoss || isBig;
+  const bossMul = isBig ? 2.15 : (isBoss ? 1.55 : 1.0);
+  const sc = p.scale * bossMul * (s.croc.fleeing ? Math.max(0, 1 - s.croc.fleeT / 520) : 1);
+  const x = p.x + 72 * p.scale * bossMul;
+  const y = p.y - 34 * p.scale * bossMul;
+  const bite = s.croc.bite || 0;
+  const enraged = s.croc.enraged;
+  const t = performance.now();
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(sc, sc);
+  if (s.croc.fleeing) ctx.translate(s.croc.fleeT * 0.22, -s.croc.fleeT * 0.14);
+
+  // Colores según estado
+  const bodyColor   = enraged ? '#1f8a3a' : (isBig ? '#2a7a3a' : '#3aa85f');
+  const darkColor   = enraged ? '#145c28' : (isBig ? '#1a5c2a' : '#2a7a40');
+  const bellyColor  = enraged ? '#3cb86a' : '#5ecf80';
+  const spikeColor  = enraged ? '#0d3d18' : '#1a4a28';
+
+  // ===== AURA (jefe / enfurecido) =====
+  if (enraged || isBig) {
+    const pulse = 0.4 + Math.sin(t / 90) * 0.25;
+    ctx.strokeStyle = `rgba(255, 40, 30, ${pulse})`;
+    ctx.lineWidth = isBig ? 9 : 6;
+    ctx.beginPath();
+    ctx.ellipse(0, 6, isBig ? 48 : 38, isBig ? 32 : 24, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  // ===== COLA (segmentada y con movimiento) =====
+  const tailWag = Math.sin(t / 110) * 7;
+  ctx.fillStyle = darkColor;
+  // segmento 1
+  ctx.beginPath();
+  ctx.moveTo(22, 8);
+  ctx.quadraticCurveTo(38, 4 + tailWag * 0.4, 48, 10 + tailWag * 0.3);
+  ctx.quadraticCurveTo(40, 16, 22, 18);
+  ctx.closePath();
+  ctx.fill();
+  // segmento 2
+  ctx.beginPath();
+  ctx.moveTo(46, 9 + tailWag * 0.3);
+  ctx.quadraticCurveTo(58, 6 + tailWag, 68, 12 + tailWag * 0.6);
+  ctx.quadraticCurveTo(56, 17, 46, 15);
+  ctx.closePath();
+  ctx.fill();
+  // punta
+  ctx.beginPath();
+  ctx.moveTo(66, 11 + tailWag * 0.5);
+  ctx.lineTo(78, 14 + tailWag);
+  ctx.lineTo(66, 17 + tailWag * 0.4);
+  ctx.closePath();
+  ctx.fill();
+
+  // ===== CUERPO PRINCIPAL =====
+  // Sombra inferior del cuerpo
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.beginPath();
+  ctx.ellipse(2, 18, isBig ? 36 : 28, 8, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Cuerpo
+  ctx.fillStyle = bodyColor;
+  ctx.beginPath();
+  ctx.ellipse(0, 8, isBig ? 36 : 29, isBig ? 20 : 16, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Vientre más claro
+  ctx.fillStyle = bellyColor;
+  ctx.beginPath();
+  ctx.ellipse(0, 12, isBig ? 28 : 22, isBig ? 11 : 9, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // ===== ESPINAS EN LA ESPALDA =====
+  ctx.fillStyle = spikeColor;
+  const spikeCount = isBig ? 7 : 5;
+  for (let i = 0; i < spikeCount; i++) {
+    const sx = -22 + i * (isBig ? 9 : 10);
+    const sy = -6 - Math.sin(i) * 2;
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.lineTo(sx + 4, sy - 10 - (i % 2) * 3);
+    ctx.lineTo(sx + 8, sy);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // ===== PATAS DELANTERAS =====
+  ctx.fillStyle = darkColor;
+  // pata izquierda
+  ctx.beginPath();
+  ctx.ellipse(-18, 18, 8, 5, -0.3, 0, Math.PI * 2);
+  ctx.fill();
+  // garras
+  ctx.fillStyle = '#ddd';
+  ctx.fillRect(-24, 20, 3, 5);
+  ctx.fillRect(-20, 21, 3, 5);
+  ctx.fillRect(-16, 20, 3, 5);
+
+  // pata derecha
+  ctx.fillStyle = darkColor;
+  ctx.beginPath();
+  ctx.ellipse(10, 19, 7, 4.5, 0.2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#ddd';
+  ctx.fillRect(5, 21, 2.5, 4);
+  ctx.fillRect(9, 22, 2.5, 4);
+  ctx.fillRect(13, 21, 2.5, 4);
+
+  // ===== CABEZA / MANDÍBULAS =====
+  // Mandíbula inferior (se abre con bite)
+  ctx.fillStyle = darkColor;
+  ctx.beginPath();
+  ctx.moveTo(-38, 5);
+  ctx.quadraticCurveTo(-58, 6 + bite * 20, -28, 10 + bite * 18);
+  ctx.quadraticCurveTo(-34, 12, -38, 5);
+  ctx.closePath();
+  ctx.fill();
+
+  // Lengua
+  if (bite > 0.3) {
+    ctx.fillStyle = '#e05070';
+    ctx.beginPath();
+    ctx.ellipse(-42, 8 + bite * 10, 6, 3 + bite * 2, 0.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Mandíbula superior
+  ctx.fillStyle = bodyColor;
+  ctx.beginPath();
+  ctx.moveTo(-38, -3);
+  ctx.quadraticCurveTo(-60, -4 - bite * 6, -26, 1);
+  ctx.quadraticCurveTo(-32, -2, -38, -3);
+  ctx.closePath();
+  ctx.fill();
+
+  // ===== DIENTES =====
+  ctx.fillStyle = '#f5f5f5';
+  const teeth = isBig ? 6 : 4;
+  for (let i = 0; i < teeth; i++) {
+    // superiores
+    ctx.beginPath();
+    ctx.moveTo(-36 + i * 5.5, -1);
+    ctx.lineTo(-34 + i * 5.5, 5 + bite * 3);
+    ctx.lineTo(-32 + i * 5.5, -1);
+    ctx.closePath();
+    ctx.fill();
+    // inferiores
+    ctx.beginPath();
+    ctx.moveTo(-36 + i * 5.5, 7);
+    ctx.lineTo(-34 + i * 5.5, 3 + bite * 2);
+    ctx.lineTo(-32 + i * 5.5, 7);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // ===== OJOS =====
+  // Globo ocular
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(8, -9, isBig ? 7 : 5.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Iris / pupila
+  const eyeColor = enraged || isBig ? '#ff1a1a' : '#111';
+  ctx.fillStyle = eyeColor;
+  ctx.beginPath();
+  ctx.arc(9.5, -9, isBig ? 3.8 : 2.8, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Brillo del ojo
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(10.5, -10.5, isBig ? 1.8 : 1.3, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Cejas enfadadas (cuando está enfurecido o es jefe)
+  if (enraged || isBoss) {
+    ctx.strokeStyle = spikeColor;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(2, -15);
+    ctx.lineTo(14, -13);
+    ctx.stroke();
+  }
+
+  // ===== FOSAS NASALES =====
+  ctx.fillStyle = darkColor;
+  ctx.beginPath();
+  ctx.ellipse(-28, -6, 3, 2, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(-22, -5.5, 2.5, 1.8, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function drawItem(it) {
+  const p = slotPos(it.floor, it.slot);
+  const bob = Math.sin(it.bob * 6) * 6;
+  const alpha = it.age > it.life - 1400 ? Math.max(0, (it.life - it.age) / 1400) : 1;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.font = (21 * p.scale) + 'px serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor = it.type.color;
+  ctx.shadowBlur = 13;
+  ctx.fillText(it.type.emoji, p.x, p.y - 105 * p.scale + bob);
+  ctx.shadowBlur = 0;
+  ctx.restore();
+}
+
+function drawDuck() {
+  const d = state.duck;
+  const sc = d.scale;
+  const idleBob = Math.sin(d.bob * 8) * 2.4 * sc;
+  const hopY = Math.sin(d.hop * Math.PI) * -17 * sc;
+  const walkBob = d.moving ? Math.sin(d.walkPhase) * 3.8 * sc : 0;
+
+  ctx.save();
+  ctx.translate(d.x, d.y - 32 * sc + idleBob + hopY + walkBob);
+  ctx.scale(sc * d.facing, sc);
+
+  // Sombra
+  ctx.save();
+  ctx.scale(1 / (sc * d.facing || 1), 1 / sc);
+  const shadowScale = 1 - Math.abs(hopY) / (28 * sc) * 0.4;
+  ctx.beginPath();
+  ctx.ellipse(0, 40 + Math.abs(hopY) / sc, 20 * shadowScale, 5.5 * shadowScale, 0, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.fill();
+  ctx.restore();
+
+  // Patas
+  const legSwing = d.moving ? Math.sin(d.walkPhase) * 0.52 : 0;
+  ctx.fillStyle = '#ff8c1a';
+  ctx.save(); ctx.translate(-8, 24); ctx.rotate(-legSwing); ctx.fillRect(-3.2, 0, 6.5, 11); ctx.restore();
+  ctx.save(); ctx.translate(5, 24); ctx.rotate(legSwing); ctx.fillRect(-3.2, 0, 6.5, 11); ctx.restore();
+
+  // Cuerpo
+  ctx.fillStyle = '#ffcf40';
+  ctx.beginPath(); ctx.ellipse(0, 7, 19, 19, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Ala
+  ctx.fillStyle = '#f2b400';
+  ctx.beginPath(); ctx.ellipse(-8.5, 9, 8.5, 12, -0.35, 0, Math.PI * 2); ctx.fill();
+
+  // Cabeza
+  ctx.fillStyle = '#ffcf40';
+  ctx.beginPath(); ctx.arc(5, -13, 12.5, 0, Math.PI * 2); ctx.fill();
+
+  // Casco
+  ctx.fillStyle = '#3df2ff';
+  ctx.beginPath(); ctx.arc(5, -19, 11.5, Math.PI, 0); ctx.fill();
+  ctx.fillRect(-6.5, -20, 23, 3.5);
+
+  // Pico
+  ctx.fillStyle = '#ff8c1a';
+  ctx.beginPath();
+  ctx.moveTo(15, -13); ctx.lineTo(28, -10); ctx.lineTo(15, -7);
+  ctx.closePath(); ctx.fill();
+
+  // Ojo
+  ctx.fillStyle = '#1a1a1a';
+  ctx.beginPath(); ctx.arc(10.5, -15, 2.2, 0, Math.PI * 2); ctx.fill();
+
+  // Martillo
+  let swing = 0;
+  if (d.hammering) {
+    const t = Math.min(1, d.hammerT / 250);
+    swing = Math.sin(t * Math.PI) * -2.15;
+  }
+  ctx.save();
+  ctx.translate(13, 1);
+  ctx.rotate(-0.52 + swing);
+  ctx.fillStyle = '#e8a95c';
+  ctx.fillRect(-2.8, -3, 5.5, 18);
+  ctx.save();
+  ctx.translate(0, 16);
+  ctx.fillStyle = '#8a5a2b';
+  ctx.fillRect(-3.5, 0, 7, 16);
+  ctx.fillStyle = '#7a828f';
+  ctx.fillRect(-10, 12, 20, 9);
+  ctx.restore();
+  ctx.restore();
+
+  if (state.hasShield) {
+    ctx.strokeStyle = 'rgba(61,242,255,0.72)';
+    ctx.lineWidth = 2.8;
+    ctx.beginPath(); ctx.arc(0, 1, 28, 0, Math.PI * 2); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawParticles() {
+  state.particles.forEach(p => {
+    const alpha = Math.max(0, 1 - p.age / p.life);
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = alpha;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  });
+}
+
+function drawFloatTexts() {
+  state.floatTexts.forEach(t => {
+    const alpha = Math.max(0, 1 - t.age / t.life);
+    ctx.globalAlpha = alpha;
+    ctx.font = "12px 'Press Start 2P'";
+    ctx.fillStyle = t.color;
+    ctx.textAlign = 'center';
+    ctx.fillText(t.text, t.x, t.y);
+    ctx.globalAlpha = 1;
+  });
+}
+
+function render() {
+  ctx.save();
+  if (state.shake > 0) {
+    ctx.translate((Math.random() - 0.5) * state.shake, (Math.random() - 0.5) * state.shake);
+  }
+  drawBackground();
+
+  for (let fi = state.floors.length - 1; fi >= 0; fi--) {
+    drawFloor(fi);
+    state.slots.filter(s => s.floor === fi).forEach(s => {
+      drawPipe(s);
+      drawCrocodile(s);
+    });
+    state.items.filter(it => it.floor === fi).forEach(drawItem);
+    if (state.duck.floor === fi) drawDuck();
+  }
+
+  drawFlood();
+  drawParticles();
+  drawFloatTexts();
+  ctx.restore();
+}
+
+function loop(ts) {
+  if (!state.lastTime) state.lastTime = ts;
+  const dt = Math.min(48, ts - state.lastTime);
+  state.lastTime = ts;
+  update(dt, performance.now());
+  render();
+  requestAnimationFrame(loop);
+}
+
+document.getElementById('startBtn').addEventListener('click', () => {
+  initAudio();
+  if (actx.state === 'suspended') actx.resume();
+  document.getElementById('startScreen').classList.add('hidden');
+  resetGame();
+  startMusic();
+});
+
+document.getElementById('restartBtn').addEventListener('click', () => {
+  if (actx.state === 'suspended') actx.resume();
+  document.getElementById('gameOverScreen').classList.add('hidden');
+  resetGame();
+  startMusic();
+});
+
+applyLayout(1);
+resetDuckPos(true);
+updateHud();
+requestAnimationFrame(loop);
+
+})();
+</script>
+</body>
+</html>

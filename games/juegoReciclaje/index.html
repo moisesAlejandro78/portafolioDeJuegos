@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>reciclajEZ ♻️</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- =========================
+         MENÚ PRINCIPAL
+    ========================== -->
+    <div id="menuInicio" class="pantalla">
+        <div class="logo">
+            <span>♻️</span>
+            <h1>reciclaj<span>EZ</span></h1>
+        </div>
+
+        <p class="subtitulo">Identifica, apunta, dispara y recicla.</p>
+
+        <div class="inicio-card">
+            <div class="canon-preview">🎯</div>
+            <h2>¡Salva el planeta!</h2>
+            <p>
+                Clasifica correctamente los residuos y ayuda a limpiar la ciudad.
+            </p>
+
+            <button id="btnJugar" class="btn-principal">▶ JUGAR</button>
+
+            <div class="instrucciones">
+                <div>🖱️ Haz clic en un contenedor</div>
+                <div>🎯 El cañón dispara el residuo</div>
+                <div>⭐ Consigue puntos y combos</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================
+         JUEGO
+    ========================== -->
+    <main id="juego" class="juego oculto">
+
+        <header class="hud">
+            <div class="hud-item">
+                <span>⭐</span>
+                <div>
+                    <small>PUNTOS</small>
+                    <strong id="puntos">0</strong>
+                </div>
+            </div>
+
+            <div class="hud-item">
+                <span>❤️</span>
+                <div>
+                    <small>VIDAS</small>
+                    <strong id="vidas">3</strong>
+                </div>
+            </div>
+
+            <div class="hud-item">
+                <span>🔥</span>
+                <div>
+                    <small>COMBO</small>
+                    <strong id="combo">0</strong>
+                </div>
+            </div>
+
+            <div class="hud-item">
+                <span>🏆</span>
+                <div>
+                    <small>NIVEL</small>
+                    <strong id="nivel">1</strong>
+                </div>
+            </div>
+
+            <div class="hud-item progreso">
+                <small>PROGRESO</small>
+                <div class="barra">
+                    <div id="barraProgreso"></div>
+                </div>
+                <span id="progresoTexto">0 / 20</span>
+            </div>
+        </header>
+
+        <section id="escenario" class="escenario">
+
+            <div class="cielo">
+                <div class="sol"></div>
+                <div class="nube nube1"></div>
+                <div class="nube nube2"></div>
+            </div>
+
+            <div class="ciudad">
+                <div class="edificio edificio-azul">
+                    <div class="ventanas"></div>
+                    <div class="puerta"></div>
+                </div>
+
+                <div class="casa">
+                    <div class="techo"></div>
+                    <div class="pared"></div>
+                    <div class="puerta"></div>
+                    <div class="ventana"></div>
+                </div>
+            </div>
+
+            <div class="suelo">
+                <div class="cesped"></div>
+                <div class="tierra"></div>
+            </div>
+
+            <!-- MENSAJE SUPERIOR -->
+            <div id="mensajeResiduo">¡CLASIFICA ESTE RESIDUO!</div>
+
+            <!-- RESIDUO ACTUAL -->
+            <div id="zonaResiduo">
+                <div class="residuo-glow"></div>
+                <div id="residuo" class="residuo">🍌</div>
+                <div id="nombreResiduo" class="nombre-residuo">Cáscara de banana</div>
+            </div>
+
+            <!-- EFECTOS DE DISPARO -->
+            <div id="trayectoria"></div>
+            <div id="proyectil" class="proyectil"></div>
+
+            <!-- CAÑÓN -->
+            <div id="zonaCanon" class="zona-canon">
+                <div id="canon" class="canon">
+                    <div class="canon-base">
+                        <div class="base-luz"></div>
+                    </div>
+
+                    <div id="canonTubo" class="canon-tubo">
+                        <div class="tubo-brillo"></div>
+                        <div class="tubo-aro"></div>
+                        <div class="canon-boca"></div>
+                    </div>
+                </div>
+
+                <div class="canon-label">🎯 CAÑÓN RECICLADOR</div>
+            </div>
+
+            <!-- CONTENEDORES -->
+            <div class="contenedores">
+
+                <button class="contenedor organico" data-tipo="organico">
+                    <div class="contenedor-tapa"></div>
+                    <div class="contenedor-iconos">
+                        <span>🍎</span>
+                        <span>🌱</span>
+                    </div>
+                    <strong>ORGÁNICO</strong>
+                    <small>Comida y restos naturales</small>
+                    <kbd>1</kbd>
+                </button>
+
+                <button class="contenedor papel" data-tipo="papel">
+                    <div class="contenedor-tapa"></div>
+                    <div class="contenedor-iconos">
+                        <span>📄</span>
+                        <span>📦</span>
+                    </div>
+                    <strong>PAPEL Y CARTÓN</strong>
+                    <small>Hojas, cajas y periódicos</small>
+                    <kbd>2</kbd>
+                </button>
+
+                <button class="contenedor plastico" data-tipo="plastico">
+                    <div class="contenedor-tapa"></div>
+                    <div class="contenedor-iconos">
+                        <span>🥤</span>
+                        <span>🛍️</span>
+                    </div>
+                    <strong>PLÁSTICO</strong>
+                    <small>Envases y botellas</small>
+                    <kbd>3</kbd>
+                </button>
+
+                <button class="contenedor vidrio" data-tipo="vidrio">
+                    <div class="contenedor-tapa"></div>
+                    <div class="contenedor-iconos">
+                        <span>🍾</span>
+                        <span>🫙</span>
+                    </div>
+                    <strong>VIDRIO</strong>
+                    <small>Botellas y frascos</small>
+                    <kbd>4</kbd>
+                </button>
+            </div>
+
+            <div id="feedback" class="feedback"></div>
+
+            <!-- PARTÍCULAS -->
+            <div id="particulas"></div>
+        </section>
+
+        <div id="consejo" class="consejo oculto">
+            <span>♻️</span>
+            <div>
+                <strong>CONSEJO DE RECICLAJE</strong>
+                <p id="textoConsejo"></p>
+            </div>
+        </div>
+    </main>
+
+    <!-- =========================
+         MODAL ERROR
+    ========================== -->
+    <div id="modalError" class="modal oculto">
+        <div class="modal-card error-card">
+            <div class="modal-icon">❌</div>
+            <h2>¡Casi!</h2>
+            <p id="textoError"></p>
+
+            <div class="respuesta-correcta">
+                <span>✅</span>
+                <div>
+                    <small>DEBÍAS COLOCARLO EN</small>
+                    <strong id="respuestaCorrecta"></strong>
+                </div>
+            </div>
+
+            <button id="btnContinuar" class="btn-principal">CONTINUAR</button>
+        </div>
+    </div>
+
+    <!-- =========================
+         MODAL NIVEL
+    ========================== -->
+    <div id="modalNivel" class="modal oculto">
+        <div class="modal-card nivel-card">
+            <div class="modal-icon">🏆</div>
+            <h2>¡Nivel completado!</h2>
+            <p id="evaluacionNivel"></p>
+
+            <div class="estadisticas">
+                <div>
+                    <span>⭐</span>
+                    <strong id="nivelPuntos">0</strong>
+                    <small>PUNTOS</small>
+                </div>
+                <div>
+                    <span>🎯</span>
+                    <strong id="nivelAciertos">0</strong>
+                    <small>ACIERTOS</small>
+                </div>
+                <div>
+                    <span>🔥</span>
+                    <strong id="nivelCombo">0</strong>
+                    <small>MEJOR COMBO</small>
+                </div>
+            </div>
+
+            <button id="btnSiguienteNivel" class="btn-principal">
+                SIGUIENTE NIVEL ▶
+            </button>
+        </div>
+    </div>
+
+    <!-- =========================
+         GAME OVER / VICTORIA
+    ========================== -->
+    <div id="modalGameOver" class="modal oculto">
+        <div class="modal-card gameover-card">
+            <div class="modal-icon">🌱</div>
+            <h2>¡Casi lo logras!</h2>
+            <p>Repasemos tus errores y vuelve a intentarlo.</p>
+
+            <div class="resultado-final">
+                <div>
+                    <strong id="puntosFinales">0</strong>
+                    <small>PUNTOS</small>
+                </div>
+                <div>
+                    <strong id="nivelFinal">1</strong>
+                    <small>NIVEL</small>
+                </div>
+            </div>
+
+            <button id="btnReintentar" class="btn-principal">🔄 REINTENTAR</button>
+            <button id="btnMenu" class="btn-secundario">🏠 MENÚ PRINCIPAL</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
