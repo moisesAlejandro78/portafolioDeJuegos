@@ -1,80 +1,122 @@
-# 🥦 NutriMaze: Carrera Saludable
+# 🦆 Pato Reparador 💧
 
-Videojuego arcade educativo de laberinto inspirado en los clásicos, con temática de nutrición y mecánicas propias.
+## 📝 Descripción
 
-## Cómo jugar
+**Pato Reparador** es un juego arcade educativo en el que el jugador controla a un pato encargado de reparar tuberías dañadas para evitar el desperdicio de agua.
 
-1. Abre el archivo `index.html` en cualquier navegador moderno (Chrome, Firefox, Edge, Safari).
-2. También puedes servir la carpeta con un servidor local:
-   ```bash
-   cd nutrimaze
-   python3 -m http.server 8080
-   ```
-   Luego visita `http://localhost:8080`.
+El objetivo es reparar las tuberías con fugas lo más rápido posible, ahorrar la mayor cantidad de agua y avanzar por diferentes niveles mientras se enfrentan obstáculos y cocodrilos.
 
-## Controles
+La mecánica principal consiste en desplazarse por el escenario, localizar las tuberías dañadas y repararlas utilizando el martillo antes de que se pierda demasiada agua.
 
-- **Teclado**: Flechas ↑ ↓ ← → o WASD
-- **Móvil / Touch**: Botones direccionales en pantalla
+## 🎯 Objetivo del jugador
 
-## Objetivo
+- Reparar las tuberías que presentan fugas.
+- Evitar que se desperdicie demasiada agua.
+- Obtener la mayor cantidad de puntos posible.
+- Ahorrar la mayor cantidad de litros de agua.
+- Superar todos los niveles.
+- Enfrentarse al jefe cocodrilo gigante en el nivel 4.
 
-Recorre el laberinto, recoge **todos los alimentos saludables** 🥦🍎🥕 y llega a la **salida** 🚪 sin ser atrapado por los enemigos.
+Cada nivel requiere reparar una cantidad determinada de tuberías para poder avanzar. :contentReference[oaicite:2]{index=2}
 
-## Mecánica de Equilibrio Nutritivo
+## 🎮 Género
 
-| Tipo de comida | Efecto |
-|----------------|--------|
-| 🥦 Saludable (brócoli, manzanas, zanahorias, arvejas…) | + velocidad, personaje más ágil y delgado |
-| 🍔 Chatarra (hamburguesas, donas, pizza…) | − velocidad, personaje más grande y lento |
+- **Arcade**
+- **Adventure**
+- **Survival**
+- **Educational**
 
-- **Ágil** (equilibrio alto): máxima velocidad y facilidad para escapar
-- **Equilibrado**: estado ideal
-- **Pesado**: lento y vulnerable
-- Si llegas a 0 de equilibrio → animación de “explosión de grasa” caricaturesca y derrota
+## 🕹️ Controles
 
-## Enemigos
+| Tecla | Acción |
+|---|---|
+| ⬅️ **FLECHA IZQUIERDA** | Moverse hacia la izquierda |
+| ➡️ **FLECHA DERECHA** | Moverse hacia la derecha |
+| ⬆️ **FLECHA ARRIBA** | Cambiar de posición/piso |
+| ⬇️ **FLECHA ABAJO** | Cambiar de posición/piso |
+| **SPACE** | Golpear/reparar con el martillo |
+| 🖱️ **CONTROLES EN PANTALLA** | Movimiento y martillo en dispositivos táctiles |
 
-| Enemigo | Comportamiento |
-|---------|----------------|
-| 🔴 Roko | Persigue directamente al jugador |
-| 🟣 Bombo | Se mueve de forma aleatoria |
-| 🟢 Chispa | Cambia de dirección con frecuencia |
-| 🟠 Traga | Patrulla zonas del mapa |
+El juego también incluye controles táctiles mediante botones en pantalla. :contentReference[oaicite:3]{index=3}
 
-## Power-ups
+## 💧 Mecánica principal
 
-- ⚡ **Súper Energía**: aumento temporal de velocidad
-- 🛡️ **Escudo Nutritivo**: un impacto gratis
-- 🥕 **Súper Vegetal**: reduce el efecto de la comida chatarra
-- ✨ **Multiplicador**: puntos x2 por unos segundos
+Las tuberías pueden presentar diferentes niveles de fuga:
 
-## Niveles
+- 🟢 **Fuga pequeña**
+- 🟡 **Fuga mediana**
+- 🔴 **Fuga grande**
 
-1. Escuela Saludable  
-2. Parque de las Frutas  
-3. Supermercado  
-4. Centro de Bienestar  
-5. Granja Saludable  
+Mientras una tubería permanece dañada, el agua continúa perdiéndose. El jugador debe llegar hasta ella y utilizar el martillo para repararla.
 
-Cada nivel introduce más enemigos, más comida chatarra y laberintos más complejos. Al completar un nivel aparece una tarjeta educativa “¿Sabías que…?”.
+Reparar rápidamente permite ahorrar más agua y conseguir una mejor puntuación. :contentReference[oaicite:4]{index=4}
 
-## Skins
+Además, aparecen diferentes objetos que pueden ayudar al jugador durante la partida:
 
-Desbloquea nuevos personajes completando niveles:
+- 🔧 Herramienta
+- 💧 Agua
+- 🧽 Esponja
+- 🛡️ Escudo
 
-- 🥕 Chef Nutri  
-- 🥦 Vegetalín  
-- 🍎 Manzanito  
-- ⚡ Turbo  
-- 🤖 Robo-Nutri  
-- 🧑‍🚀 Nutri Explorer  
+También aparecen cocodrilos que dificultan las reparaciones y pueden hacer que el jugador pierda vidas. :contentReference[oaicite:5]{index=5}
 
-## Características técnicas
+## 🏆 Niveles
 
-- HTML5 Canvas + JavaScript puro (sin dependencias)
-- Responsive y con controles táctiles
-- Animaciones, partículas y feedback visual
-- Interfaz moderna en español
+El juego cuenta con diferentes niveles que aumentan progresivamente la dificultad.
 
-¡Disfruta y aprende jugando!
+- **Nivel 1:** 9 tuberías
+- **Nivel 2:** 12 tuberías
+- **Nivel 3:** 16 tuberías
+- **Nivel 4:** ¡Jefe Cocodrilo Gigante!
+
+Al completar las tuberías necesarias se avanza al siguiente nivel. :contentReference[oaicite:6]{index=6}
+
+## ❤️ Sistema de vidas
+
+El jugador comienza con **3 vidas**.
+
+Si las vidas llegan a cero, el agua termina inundando el escenario y aparece la pantalla de derrota.
+
+Al finalizar la partida se muestra el puntaje obtenido y la cantidad de agua ahorrada. :contentReference[oaicite:7]{index=7}
+
+## 📊 Sistema de puntuación
+
+El juego registra:
+
+- **Puntos**
+- **Nivel**
+- **Litros de agua ahorrados**
+- **Cantidad de tuberías reparadas**
+- **Vidas restantes**
+
+La puntuación y el agua ahorrada dependen de la rapidez y efectividad con la que el jugador repare las tuberías. :contentReference[oaicite:8]{index=8}
+
+## 📸 Captura de pantalla
+
+### Pantalla principal y gameplay
+
+![Pato Reparador](../../assets/pato.png)
+
+La captura muestra el juego **Pato Reparador**, donde el jugador debe reparar las tuberías y evitar el desperdicio de agua.
+
+## 🌱 Propósito educativo
+
+El juego busca transmitir de una manera entretenida la importancia de **cuidar y ahorrar el agua**.
+
+A través de una mecánica de acción rápida, el jugador debe tomar decisiones y actuar rápidamente para evitar que el agua se desperdicie.
+
+## ▶️ Jugar
+
+[🎮 **JUGAR PATO REPARADOR**](https://moisesAlejandro78.github.io/portafolioDeJuegos/games/juegoAhorro/pato_reparador.html)
+
+## 🛠️ Tecnologías utilizadas
+
+- HTML5
+- CSS3
+- JavaScript
+- Canvas API
+- Web Audio API
+
+## 👨‍💻 Proyecto
+
+**Pato Reparador** forma parte del portafolio de juegos educativos desarrollados para demostrar conocimientos de programación web y desarrollo de videojuegos.

@@ -101,7 +101,7 @@ Cada proyecto experimenta con diferentes mecánicas, diseños y tecnologías.
 
 <div align="center">
 
-<img src="assets/juegoAhorro.gif" width="100%">
+<img src="assets/pato.png" width="100%">
 
 </div>
 
@@ -131,7 +131,7 @@ Videojuego educativo enfocado en el aprendizaje y la toma de decisiones relacion
 
  
 
-<a href="games/juegoAhorro/index.html">
+<a href="games/juegoAhorro/pato_reparador.html">
 <img src="https://img.shields.io/badge/▶️_JUGAR-00C853?style=for-the-badge">
 </a>
 
@@ -181,7 +181,7 @@ Videojuego interactivo diseñado alrededor de una experiencia de juego dinámica
 
 <div align="center">
 
-<img src="assets/juegobullE.gif" width="100%">
+<img src="assets/bully.png" width="100%">
 
 </div>
 
@@ -201,7 +201,7 @@ Videojuego interactivo diseñado alrededor de una experiencia de juego dinámica
 
 <div align="center">
 
-<img src="assets/juegoDinero.gif" width="100%">
+<img src="assets/maze.png" width="100%">
 
 </div>
 
@@ -281,7 +281,7 @@ Una aventura educativa donde el jugador debe superar desafíos relacionados con 
 
 <div align="center">
 
-<img src="assets/juegoNutrimaze.gif" width="100%">
+<img src="assets/nutri.png" width="100%">
 
 </div>
 
@@ -301,7 +301,7 @@ Una aventura educativa donde el jugador debe superar desafíos relacionados con 
 
 <div align="center">
 
-<img src="assets/juegoReciclaje.gif" width="100%">
+<img src="assets/reciclaje.png" width="100%">
 
 </div>
 
@@ -341,14 +341,6 @@ Videojuego educativo que busca enseñar conceptos relacionados con el reciclaje 
 </table>
 
 <br>
-
-<h2>📊 Portfolio Stats</h2>
-
-<div align="center">
-
-<img src="https://github-readme-stats.vercel.app/api?username=moisesAlejandro78&show_icons=true&theme=midnight-purple&hide_border=true" height="170">
-
-<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=moisesAlejandro78&layout=compact&theme=midnight-purple&hide_border=true" height="170">
 
 </div>
 
