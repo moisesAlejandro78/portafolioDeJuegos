@@ -101,7 +101,7 @@ Cada proyecto experimenta con diferentes mecánicas, diseños y tecnologías.
 
 <div align="center">
 
-<img src="assets/juegoAhorro.gif" width="100%">
+<img src="assets/pato.png" width="100%">
 
 </div>
 
@@ -125,13 +125,13 @@ Videojuego educativo enfocado en el aprendizaje y la toma de decisiones relacion
 
 <br>
 
-<a href="games/juegoAhorro">
+<a href="games/juegoAhorro/pato_reparador.html">
 <img src="https://img.shields.io/badge/📂_VER_PROYECTO-7B61FF?style=for-the-badge">
 </a>
 
  
 
-<a href="games/juegoAhorro/index.html">
+<a href="games/juegoAhorro/pato_reparador.html">
 <img src="https://img.shields.io/badge/▶️_JUGAR-00C853?style=for-the-badge">
 </a>
 
