@@ -125,7 +125,7 @@ Videojuego educativo enfocado en el aprendizaje y la toma de decisiones relacion
 
 <br>
 
-<a href="games/juegoAhorro/pato_reparador.html">
+<a href="games/juegoAhorro">
 <img src="https://img.shields.io/badge/📂_VER_PROYECTO-7B61FF?style=for-the-badge">
 </a>
 
@@ -201,7 +201,7 @@ Videojuego interactivo diseñado alrededor de una experiencia de juego dinámica
 
 <div align="center">
 
-<img src="assets/juegoDinero.gif" width="100%">
+<img src="assets/maze.png" width="100%">
 
 </div>
 
@@ -281,7 +281,7 @@ Una aventura educativa donde el jugador debe superar desafíos relacionados con 
 
 <div align="center">
 
-<img src="assets/juegoNutrimaze.gif" width="100%">
+<img src="assets/nutri.png" width="100%">
 
 </div>
 
@@ -301,7 +301,7 @@ Una aventura educativa donde el jugador debe superar desafíos relacionados con 
 
 <div align="center">
 
-<img src="assets/juegoReciclaje.gif" width="100%">
+<img src="assets/reciclaje.png" width="100%">
 
 </div>
 
