@@ -82,6 +82,12 @@ Al final de cada carrera se genera un **Reporte Financiero**:
 - **Victoria**: llegar a 3000 metros.
 - **Derrota**: chocar sin escudo ni hamburguesas de emergencia.
 
+## 📸 Captura de pantalla
+
+![Money Runner](../../assets/dinero.png)
+
+La captura muestra el juego **Money Runner**, con la carrera por la ciudad, el HUD de dinero/ahorro y las mecánicas de recolección.
+
 ## 📊 Características técnicas
 
 - HTML5 Canvas + JavaScript puro (sin dependencias externas)
