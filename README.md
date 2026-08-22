@@ -342,14 +342,6 @@ Videojuego educativo que busca enseñar conceptos relacionados con el reciclaje 
 
 <br>
 
-<h2>📊 Portfolio Stats</h2>
-
-<div align="center">
-
-<img src="https://github-readme-stats.vercel.app/api?username=moisesAlejandro78&show_icons=true&theme=midnight-purple&hide_border=true" height="170">
-
-<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=moisesAlejandro78&layout=compact&theme=midnight-purple&hide_border=true" height="170">
-
 </div>
 
 <br>
