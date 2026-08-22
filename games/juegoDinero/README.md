@@ -84,7 +84,7 @@ Al final de cada carrera se genera un **Reporte Financiero**:
 
 ## 📸 Captura de pantalla
 
-![Money Runner](../../assets/dinero.png)
+![Money Runner](../../assets/maze.png)
 
 La captura muestra el juego **Money Runner**, con la carrera por la ciudad, el HUD de dinero/ahorro y las mecánicas de recolección.
 
